@@ -888,6 +888,8 @@ render();
 var rT;window.addEventListener("resize",function(){clearTimeout(rT);rT=setTimeout(render,120);});
 document.addEventListener("visibilitychange",function(){if(!document.hidden){if($("fDate").value>todayStr()||!$("fKg").value)$("fDate").value=todayStr();$("fDate").max=todayStr();render();}});
 initCloud();
+/* ask the browser to keep our storage out of automatic eviction (re-requested on every launch) */
+try{if(navigator.storage&&navigator.storage.persist){navigator.storage.persisted().then(function(p){if(!p)return navigator.storage.persist();}).catch(function(){});}}catch(e){}
 })();
 </script>
 </body>
