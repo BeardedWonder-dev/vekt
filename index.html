@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Vekt">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#f4f3f0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#111110" media="(prefers-color-scheme: dark)">
+<title>Vektlogg</title>
+<style>
+:root{
+  color-scheme: light;
+  --bg:#f4f3f0; --surface:#fcfcfb; --surface-2:#f0efec;
+  --text:#0b0b0b; --text-2:#52514e; --text-3:#7d7c77;
+  --grid:#e4e3df; --line:#d9d8d3;
+  --s1:#2a78d6; --s1-soft:rgba(42,120,214,.12);
+  --up:#eb6834; --dot:#a3a29c;
+  --good:#0a7d2c; --good-soft:rgba(10,125,44,.10);
+  --neutral-soft:rgba(82,81,78,.10);
+  --danger:#c62f2f;
+  --radius:16px;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    color-scheme: dark;
+    --bg:#111110; --surface:#1a1a19; --surface-2:#242422;
+    --text:#f0efec; --text-2:#c3c2b7; --text-3:#8f8e87;
+    --grid:#2c2c2a; --line:#353532;
+    --s1:#3987e5; --s1-soft:rgba(57,135,229,.18);
+    --up:#d95926; --dot:#6f6e69;
+    --good:#4cc26b; --good-soft:rgba(76,194,107,.14);
+    --neutral-soft:rgba(195,194,183,.12);
+    --danger:#ef6b6b;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);
+  font:16px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-text-size-adjust:100%}
+body{padding:calc(env(safe-area-inset-top) + 12px) calc(env(safe-area-inset-right) + 14px) calc(env(safe-area-inset-bottom) + 40px) calc(env(safe-area-inset-left) + 14px)}
+.wrap{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.num{font-variant-numeric:tabular-nums}
+header{display:flex;align-items:baseline;justify-content:space-between;padding:4px 2px 0}
+header h1{font-size:22px;margin:0;letter-spacing:-.01em}
+header .today{color:var(--text-3);font-size:14px}
+.card{background:var(--surface);border-radius:var(--radius);padding:16px;border:1px solid var(--line)}
+.card h2{font-size:15px;margin:0 0 10px;font-weight:600}
+.muted{color:var(--text-2)}
+.small{font-size:13px}
+.tiny{font-size:12px;color:var(--text-3)}
+
+/* Form */
+form.entry{display:grid;grid-template-columns:1fr;gap:12px}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--text-2)}
+input[type=date],input[type=text],input[type=number],textarea{
+  font:inherit;font-size:17px;color:var(--text);background:var(--surface-2);
+  border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;min-height:46px}
+input[type=date]{-webkit-appearance:none;appearance:none;display:block;text-align:left;line-height:24px}
+input[type=date]::-webkit-date-and-time-value{text-align:left}
+input:focus,textarea:focus{outline:2px solid var(--s1);outline-offset:1px}
+.kg-field{position:relative}
+.kg-field input{padding-right:40px;font-weight:600}
+.kg-field span{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--text-3);pointer-events:none}
+button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--text);padding:9px 14px;min-height:40px}
+button.primary{background:var(--s1);border-color:var(--s1);color:#fff;font-weight:600;font-size:17px;min-height:48px}
+button.ghost{background:transparent}
+button.danger{color:var(--danger)}
+button:active{transform:scale(.98)}
+.form-note{grid-column:1/-1;font-size:13px;color:var(--text-2);margin-top:-4px}
+.form-note:empty{display:none}
+.form-note.ok{color:var(--good)}
+.form-note.err{color:var(--danger)}
+
+/* Hero */
+.hero .label{font-size:14px;color:var(--text-2);margin-bottom:2px}
+.hero .big{font-size:52px;font-weight:700;letter-spacing:-.02em;line-height:1.05}
+.hero .big small{font-size:22px;font-weight:600;color:var(--text-2);margin-left:4px}
+.delta{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:6px 10px;border-radius:999px;font-weight:600;font-size:15px}
+.delta.down{background:var(--good-soft);color:var(--good)}
+.delta.up,.delta.flat{background:var(--neutral-soft);color:var(--text-2)}
+.hero .sub{margin-top:10px;font-size:14px;color:var(--text-2)}
+.hero .sub b{color:var(--text);font-weight:600}
+.weekdots{display:flex;gap:6px;margin-top:14px}
+.weekdots div{flex:1;text-align:center;font-size:11px;color:var(--text-3)}
+.weekdots i{display:block;height:8px;border-radius:4px;background:var(--surface-2);border:1px solid var(--line);margin-bottom:4px}
+.weekdots .on i{background:var(--s1);border-color:var(--s1)}
+.weekdots .today{color:var(--text);font-weight:700}
+.hint{margin-top:12px;padding:10px 12px;background:var(--s1-soft);border-radius:10px;font-size:14px;color:var(--text)}
+
+/* Tiles */
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.tile .tl{font-size:13px;color:var(--text-2)}
+.tile .tv{font-size:24px;font-weight:700;margin-top:2px;letter-spacing:-.01em}
+.tile .tv small{font-size:14px;font-weight:600;color:var(--text-2);margin-left:2px}
+.tile .ts{font-size:12px;color:var(--text-3);margin-top:2px}
+.tile.empty .tv{font-size:15px;font-weight:500;color:var(--text-3);margin-top:6px}
+
+/* Charts */
+.chart-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
+.chart-head h2{margin:0}
+.seg{display:flex;background:var(--surface-2);border-radius:9px;padding:2px;border:1px solid var(--line)}
+.seg button{border:0;background:transparent;min-height:30px;padding:4px 10px;font-size:13px;color:var(--text-2);border-radius:7px}
+.seg button.on{background:var(--surface);color:var(--text);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--text-2);margin:2px 0 6px;flex-wrap:wrap}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw-dot{width:8px;height:8px;border-radius:50%;background:var(--dot)}
+.sw-line{width:16px;height:2px;border-radius:1px;background:var(--s1)}
+.sw-goal{width:16px;border-top:2px dashed var(--text-3)}
+.sw-bar{width:10px;height:10px;border-radius:2px}
+.chart{position:relative;width:100%;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.chart svg{display:block;width:100%;overflow:visible}
+.chart text{fill:var(--text-3);font-size:11px;font-variant-numeric:tabular-nums}
+.tip{position:absolute;pointer-events:none;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:7px 10px;font-size:13px;box-shadow:0 4px 14px rgba(0,0,0,.12);white-space:nowrap;display:none;z-index:2}
+.tip b{font-weight:600}
+.tip .tl{color:var(--text-3);font-size:12px}
+.placeholder{height:150px;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--text-3);font-size:14px;padding:0 20px;background:var(--surface-2);border-radius:12px;border:1px dashed var(--line)}
+
+/* Tables / lists */
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-weight:500;color:var(--text-3);font-size:12px;padding:4px 0 6px;border-bottom:1px solid var(--line)}
+td{padding:9px 0;border-bottom:1px solid var(--grid)}
+th.r,td.r{text-align:right}
+tr:last-child td{border-bottom:0}
+.hist-wk{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-top:18px;padding-bottom:6px;border-bottom:1px solid var(--line);font-size:13px}
+.hist-wk:first-child{margin-top:0}
+.hist-wk b{font-size:14px}
+.hist-wk span{color:var(--text-2)}
+.hist-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--grid);cursor:pointer}
+.hist-row.editing{cursor:default;background:var(--s1-soft);border-radius:12px;padding:10px;margin:6px 0;border-bottom:0;flex-wrap:wrap}
+.hist-row.editing .d{flex-basis:100%}
+.hist-row .ed-wrap{position:relative;flex:1;min-width:110px}
+.hist-row .ed-wrap input{min-height:42px;font-weight:600;padding-right:36px}
+.hist-row .ed-wrap span{position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--text-3);font-size:14px}
+.hist-row button.save{background:var(--s1);border-color:var(--s1);color:#fff;font-weight:600}
+.hist-row.saved .k{color:var(--good)}
+.hist-row .pen{color:var(--text-3);font-size:13px;padding:4px 2px}
+.hist-row:last-child{border-bottom:0}
+.today-done{display:flex;align-items:center;gap:12px}
+.today-done .chk{width:40px;height:40px;border-radius:50%;background:var(--good-soft);color:var(--good);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;flex:none}
+.today-done .info{flex:1}
+.today-done .kgv{font-size:22px;font-weight:700}
+.linkbtn{background:none;border:0;color:var(--s1);padding:6px 0;min-height:0;font-size:14px}
+.td-foot{display:flex;justify-content:space-between;align-items:center;margin-top:8px;gap:8px}
+.btnrow{display:flex;gap:10px}
+.btnrow .primary{flex:1}
+.hist-row .d{flex:1;font-size:14px}
+.hist-row .d .tiny{display:block}
+.hist-row .k{font-weight:600;font-variant-numeric:tabular-nums;min-width:70px;text-align:right}
+.hist-row button{min-height:38px;padding:4px 12px;font-size:14px}
+.more{margin-top:8px;width:100%}
+details.card summary{font-weight:600;font-size:15px;cursor:pointer;list-style:none;display:flex;justify-content:space-between}
+details.card summary::-webkit-details-marker{display:none}
+details.card summary::after{content:"＋";color:var(--text-3)}
+details.card[open] summary::after{content:"－"}
+.set-block{margin-top:14px;padding-top:14px;border-top:1px solid var(--grid)}
+.set-block h3{font-size:14px;margin:0 0 6px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row > input{flex:1;min-width:120px}
+textarea{font-size:13px;min-height:90px;font-family:ui-monospace,Menlo,monospace}
+.sync{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-3);padding:0 4px}
+.sync i{width:7px;height:7px;border-radius:50%;background:var(--text-3);flex:none}
+.sync.cloud i{background:var(--good)}
+.sync.warn i{background:var(--up)}
+.banner{background:rgba(235,104,52,.12);border:1px solid rgba(235,104,52,.35);color:var(--text);border-radius:12px;padding:10px 12px;font-size:14px;display:none}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Vektlogg</h1>
+    <div class="today" id="todayLabel"></div>
+  </header>
+
+  <div class="banner" id="storageBanner">Denne nettleseren lar ikke siden lagre data permanent akkurat nå. Det du legger inn kan forsvinne når du lukker. Bruk «Backup» nederst for å ta vare på dataene.</div>
+
+  <section class="card">
+    <div id="todayDone" class="hidden">
+      <div class="today-done">
+        <div class="chk">✓</div>
+        <div class="info"><div class="tiny">Veid i dag</div><div class="kgv num" id="tdKg"></div></div>
+        <button type="button" id="tdEdit">Endre</button>
+      </div>
+      <div class="td-foot">
+        <button type="button" class="linkbtn" id="tdOther">+ Legg inn for en annen dato</button>
+        <span class="tiny" id="tdNote"></span>
+      </div>
+    </div>
+    <form class="entry" id="entryForm" autocomplete="off">
+      <label class="f">Dato
+        <input type="date" id="fDate" required>
+      </label>
+      <label class="f">Vekt
+        <div class="kg-field"><input type="text" id="fKg" inputmode="decimal" placeholder="f.eks. 82,4" enterkeyhint="done"><span>kg</span></div>
+      </label>
+      <div class="form-note" id="formNote"></div>
+      <div class="btnrow"><button type="button" id="fCancel" class="hidden">Avbryt</button><button class="primary" type="submit" id="fBtn">Lagre</button></div>
+    </form>
+  </section>
+
+  <section class="card hero" id="hero"></section>
+
+  <section class="tiles" id="tiles"></section>
+
+  <section class="card">
+    <div class="chart-head">
+      <h2>Utvikling</h2>
+      <div class="seg" id="rangeSeg">
+        <button type="button" data-r="30" class="on">30 d</button>
+        <button type="button" data-r="90">90 d</button>
+        <button type="button" data-r="0">Alt</button>
+      </div>
+    </div>
+    <div class="legend" id="trendLegend">
+      <span><i class="sw-dot"></i>Daglig vekt</span>
+      <span><i class="sw-line"></i>7-dagers snitt</span>
+      <span id="goalLegend" class="hidden"><i class="sw-goal"></i>Mål</span>
+    </div>
+    <div class="chart" id="trendChart"></div>
+  </section>
+
+  <section class="card">
+    <div class="chart-head"><h2>Endring i ukesnitt</h2></div>
+    <div class="legend" id="weekLegend">
+      <span><i class="sw-bar" style="background:var(--s1)"></i>Ned fra uken før</span>
+      <span><i class="sw-bar" style="background:var(--up)"></i>Opp fra uken før</span>
+    </div>
+    <div class="chart" id="weekChart"></div>
+  </section>
+
+  <section class="card" id="weekTableCard">
+    <h2>Ukesnitt</h2>
+    <div id="weekTable"></div>
+  </section>
+
+  <section class="card">
+    <h2>Historikk</h2>
+    <div id="history"></div>
+  </section>
+
+  <details class="card" id="settings">
+    <summary>Innstillinger og backup</summary>
+    <div class="set-block">
+      <h3>Målvekt (valgfritt)</h3>
+      <div class="row">
+        <input type="text" id="goalInput" inputmode="decimal" placeholder="f.eks. 78">
+        <button type="button" id="goalSave">Lagre mål</button>
+        <button type="button" class="ghost" id="goalClear">Fjern</button>
+      </div>
+      <div class="tiny" id="goalNote" style="margin-top:6px"></div>
+    </div>
+    <div class="set-block">
+      <h3>Backup</h3>
+      <p class="small muted" style="margin:0 0 8px">Kopier dataene og lagre dem et trygt sted (f.eks. i Notater). Lim inn igjen nedenfor for å gjenopprette eller flytte til en annen enhet. Import slår sammen med det som finnes.</p>
+      <div class="row">
+        <button type="button" id="exportCopy">Kopier backup</button>
+        <button type="button" id="exportFile">Last ned fil</button>
+      </div>
+      <textarea id="ioText" placeholder="Backup-tekst vises her / lim inn backup her" style="margin-top:8px"></textarea>
+      <div class="row" style="margin-top:8px">
+        <button type="button" id="importBtn">Importer fra tekst</button>
+        <label class="small muted" style="display:inline-flex;align-items:center;gap:6px">eller fil: <input type="file" id="importFile" accept=".json,application/json,text/plain" style="font-size:13px;max-width:180px"></label>
+      </div>
+      <div class="tiny" id="ioNote" style="margin-top:6px"></div>
+    </div>
+    <div class="set-block">
+      <h3>Slett alle data</h3>
+      <button type="button" class="danger" id="wipeBtn">Slett alt</button>
+      <span class="tiny" id="wipeNote"></span>
+    </div>
+  </details>
+
+  <div class="sync" id="sync"><i></i><span>Lagret lokalt i denne nettleseren</span></div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- storage helpers ---------- */
+var LS_ENTRIES="vektlogg.entries.v1", LS_GOAL="vektlogg.goal.v1", LS_PENDING="vektlogg.pending.v1";
+function lsGet(k,def){try{var v=localStorage.getItem(k);return v==null?def:JSON.parse(v);}catch(e){return def;}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true;}catch(e){return false;}}
+var storageOK=(function(){try{localStorage.setItem("__t","1");localStorage.removeItem("__t");return true;}catch(e){return false;}})();
+
+var entries=lsGet(LS_ENTRIES,{})||{};   // "YYYY-MM-DD" -> kg
+var goal=lsGet(LS_GOAL,null);
+var pending=lsGet(LS_PENDING,{entries:{},goal:undefined})||{entries:{}};
+if(!pending.entries) pending.entries={};
+var trackPending = location.protocol!=="file:"; // cloud sync only possible when hosted
+var mode="local", col=null;
+
+function cacheLocal(){
+  var ok=lsSet(LS_ENTRIES,entries); lsSet(LS_GOAL,goal);
+  if(!ok) storageOK=false;
+}
+function savePending(){ if(trackPending) lsSet(LS_PENDING,pending); }
+
+/* ---------- date helpers (day numbers in UTC to avoid DST issues) ---------- */
+function pad(n){return String(n).padStart(2,"0");}
+function todayStr(){var d=new Date();return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());}
+function toDay(s){var p=s.split("-").map(Number);return Math.round(Date.UTC(p[0],p[1]-1,p[2])/864e5);}
+function fromDay(n){var d=new Date(n*864e5);return d.getUTCFullYear()+"-"+pad(d.getUTCMonth()+1)+"-"+pad(d.getUTCDate());}
+function dow(n){return (new Date(n*864e5).getUTCDay()+6)%7;} // 0=Mon
+function weekStart(n){return n-dow(n);}
+function isoWeek(n){var thu=weekStart(n)+3;var y=new Date(thu*864e5).getUTCFullYear();return 1+Math.floor((thu-Math.round(Date.UTC(y,0,1)/864e5))/7);}
+function dLabel(n,opt){return new Date(n*864e5).toLocaleDateString("nb-NO",Object.assign({timeZone:"UTC"},opt||{day:"numeric",month:"short"})).replace(/\.$/,"");}
+var WD=["M","T","O","T","F","L","S"];
+
+/* ---------- number helpers ---------- */
+function fmt(x,dec){if(dec==null)dec=1;return x.toLocaleString("nb-NO",{minimumFractionDigits:dec,maximumFractionDigits:dec}).replace("-","−").replace("−","−");}
+function fmtSigned(x,dec){var r=Math.round(x*Math.pow(10,dec==null?1:dec))/Math.pow(10,dec==null?1:dec);if(r===0)return "±"+fmt(0,dec);return (r>0?"+":"−")+fmt(Math.abs(r),dec);}
+function parseKg(s){if(s==null)return NaN;s=String(s).trim().replace(",",".").replace(/\s|kg/gi,"");if(!/^\d{1,3}(\.\d{1,2})?$/.test(s))return NaN;return parseFloat(s);}
+function avg(a){var s=0;for(var i=0;i<a.length;i++)s+=a[i];return s/a.length;}
+
+/* ---------- derived data ---------- */
+function series(){
+  return Object.keys(entries).sort().map(function(d){return {d:d,dn:toDay(d),kg:entries[d]};});
+}
+function withRolling(arr){
+  // 7-day rolling average (entries in [d-6,d])
+  var out=[],j=0;
+  for(var i=0;i<arr.length;i++){
+    while(arr[j].dn<arr[i].dn-6)j++;
+    var s=0,n=0;for(var k=j;k<=i;k++){s+=arr[k].kg;n++;}
+    out.push({d:arr[i].d,dn:arr[i].dn,kg:arr[i].kg,ra:s/n});
+  }
+  return out;
+}
+function weeks(arr){
+  var m={};
+  arr.forEach(function(p){var w=weekStart(p.dn);(m[w]=m[w]||{ws:w,vals:[],days:[]}).vals.push(p.kg);m[w].days.push(dow(p.dn));});
+  return Object.keys(m).map(Number).sort(function(a,b){return a-b;}).map(function(w){var o=m[w];o.avg=avg(o.vals);o.n=o.vals.length;return o;});
+}
+function trend(arr,todayN){
+  // linear regression over last 28 days; needs span >= 7 days and >= 4 points
+  var pts=arr.filter(function(p){return p.dn>=todayN-27;});
+  if(pts.length<4)return null;
+  var span=pts[pts.length-1].dn-pts[0].dn; if(span<7)return null;
+  var mx=avg(pts.map(function(p){return p.dn;})),my=avg(pts.map(function(p){return p.kg;}));
+  var num=0,den=0;pts.forEach(function(p){num+=(p.dn-mx)*(p.kg-my);den+=(p.dn-mx)*(p.dn-mx);});
+  if(!den)return null;
+  return {perWeek:num/den*7,span:span,n:pts.length};
+}
+
+/* ---------- rendering ---------- */
+var $=function(id){return document.getElementById(id);};
+var range=30, histAll=false;
+
+function render(){
+  var tN=toDay(todayStr());
+  $("todayLabel").textContent=new Date().toLocaleDateString("nb-NO",{weekday:"long",day:"numeric",month:"long"});
+  $("storageBanner").style.display=storageOK?"none":"block";
+  var arr=withRolling(series());
+  var wk=weeks(arr);
+  renderHero(arr,wk,tN);
+  renderTiles(arr,wk,tN);
+  drawTrend(arr,tN);
+  drawWeeks(wk,tN);
+  renderWeekTable(wk,tN);
+  renderHistory(arr);
+  updateFormNote();
+  $("goalInput").placeholder=goal!=null?fmt(goal):"f.eks. 78";
+  $("goalNote").textContent=goal!=null?"Nåværende mål: "+fmt(goal)+" kg":"";
+}
+
+function weekDotsHTML(w,tN){
+  var ws=weekStart(tN),days=w?w.days:[],h='<div class="weekdots" aria-label="Dager veid denne uken">';
+  for(var i=0;i<7;i++){
+    var on=days.indexOf(i)>=0,isT=(ws+i===tN);
+    h+='<div class="'+(on?"on ":"")+(isT?"today":"")+'"><i></i>'+WD[i]+'</div>';
+  }
+  return h+'</div>';
+}
+
+function renderHero(arr,wk,tN){
+  var el=$("hero"),ws=weekStart(tN);
+  var thisW=wk.find(function(w){return w.ws===ws;});
+  var prior=wk.filter(function(w){return w.ws<ws;});
+  var prevW=prior.length?prior[prior.length-1]:null;
+  var lastWeekIsPrev=prevW&&prevW.ws===ws-7;
+  var h="";
+
+  if(!arr.length){
+    h='<div class="label">Velkommen 👋</div>'+
+      '<div style="font-size:22px;font-weight:700;margin:4px 0 6px">Legg inn din første vekt</div>'+
+      '<div class="sub">Veie deg helst hver morgen, på samme måte (etter toalettbesøk, før frokost). Dagsvekten svinger mye – det er <b>ukesnittet</b> som forteller sannheten.</div>'+
+      weekDotsHTML(null,tN)+
+      '<div class="hint">Du ser snitt hittil denne uken fra første måling. Sammenligning mot forrige uke dukker opp fra mandag '+dLabel(ws+7,{day:"numeric",month:"long"})+'.</div>';
+    el.innerHTML=h;return;
+  }
+
+  if(thisW){
+    var label="Snitt "+(dow(tN)===6?"denne uken":"hittil denne uken")+" · uke "+isoWeek(tN);
+    h+='<div class="label">'+label+'</div>';
+    h+='<div class="big num">'+fmt(thisW.avg)+'<small>kg</small></div>';
+    if(prevW){
+      var diff=thisW.avg-prevW.avg, r=Math.round(diff*10)/10;
+      var cls=r<0?"down":(r>0?"up":"flat"), arrow=r<0?"▼":(r>0?"▲":"●");
+      var vs=lastWeekIsPrev?"forrige uke":"uke "+isoWeek(prevW.ws);
+      h+='<div class="delta '+cls+' num">'+arrow+' '+fmtSigned(diff)+' kg mot '+vs+'</div>';
+      h+='<div class="sub">'+(lastWeekIsPrev?"Forrige uke":"Uke "+isoWeek(prevW.ws)+" (siste uke med data)")+': <b class="num">'+fmt(prevW.avg)+' kg</b> · '+prevW.n+' måling'+(prevW.n===1?"":"er")+'</div>';
+      // apples-to-apples: same weekdays last week, when this week is incomplete
+      if(lastWeekIsPrev && thisW.n<7){
+        var same=[];thisW.days.forEach(function(d){var k=fromDay(prevW.ws+d);if(entries[k]!=null)same.push(entries[k]);});
+        if(same.length>=1 && same.length<prevW.n){
+          var sd=thisW.avg-avg(same);
+          h+='<div class="sub">Samme ukedager forrige uke: <b class="num">'+fmt(avg(same))+' kg</b> ('+fmtSigned(sd)+' kg)</div>';
+        }
+      }
+      h+='<div class="tiny" style="margin-top:6px">Basert på '+thisW.n+' av 7 dager denne uken'+(thisW.n<4?" – tallet blir sikrere utover uken.":".")+'</div>';
+    } else {
+      h+='<div class="sub">'+thisW.n+' måling'+(thisW.n===1?"":"er")+' så langt denne uken.</div>';
+    }
+    h+=weekDotsHTML(thisW,tN);
+    if(!prevW){
+      h+='<div class="hint">Første uke! Fra mandag '+dLabel(ws+7,{day:"numeric",month:"long"})+' ser du hvordan neste ukes snitt står seg mot denne.</div>';
+    }
+  } else {
+    // nothing logged this week yet
+    if(prevW){
+      h+='<div class="label">'+(lastWeekIsPrev?"Forrige ukes snitt":"Siste ukesnitt (uke "+isoWeek(prevW.ws)+")")+'</div>';
+      h+='<div class="big num">'+fmt(prevW.avg)+'<small>kg</small></div>';
+      h+='<div class="sub">'+prevW.n+' måling'+(prevW.n===1?"":"er")+' · uke '+isoWeek(prevW.ws)+'</div>';
+    }
+    h+=weekDotsHTML(null,tN);
+    h+='<div class="hint">Ny uke! Legg inn dagens vekt for å starte ukens snitt'+(prevW?" og se det mot "+(lastWeekIsPrev?"forrige uke":"uke "+isoWeek(prevW.ws)):"")+'.</div>';
+  }
+  el.innerHTML=h;
+}
+
+function tile(label,value,unit,sub){
+  if(value==null) return '<div class="tile empty"><div class="tl">'+label+'</div><div class="tv">'+sub+'</div></div>';
+  return '<div class="tile"><div class="tl">'+label+'</div><div class="tv num">'+value+(unit?'<small>'+unit+'</small>':'')+'</div>'+(sub?'<div class="ts">'+sub+'</div>':'')+'</div>';
+}
+function renderTiles(arr,wk,tN){
+  var el=$("tiles");
+  if(!arr.length){el.innerHTML="";return;}
+  var last=arr[arr.length-1],first=arr[0],h="";
+  var ago=tN-last.dn;
+  h+=tile("Siste måling",fmt(last.kg),"kg",ago===0?"i dag":(ago===1?"i går":dLabel(last.dn,{weekday:"short",day:"numeric",month:"short"})));
+  if(arr.length>=2) h+=tile("Totalt siden start",fmtSigned(last.kg-first.kg),"kg","fra "+fmt(first.kg)+" kg, "+dLabel(first.dn));
+  else h+=tile("Totalt siden start",null,null,"Vises etter 2 målinger");
+  var t=trend(arr,tN);
+  if(t) h+=tile("Tempo",fmtSigned(t.perWeek,2),"kg/uke","trend siste "+(t.span+1)+" dager");
+  else h+=tile("Tempo",null,null,"Trenger ~1 uke med data");
+  if(goal!=null){
+    var rem=last.kg-goal;
+    var sub="";
+    if(rem<=0) sub="Mål nådd 🎉";
+    else if(t&&t.perWeek<-0.02){var wks=rem/(-t.perWeek);sub="ca. "+dLabel(tN+Math.round(wks*7),{day:"numeric",month:"short",year:"numeric"})+" med dagens tempo";}
+    else sub="mål: "+fmt(goal)+" kg";
+    h+=tile("Igjen til mål",rem<=0?fmt(0):fmt(rem),"kg",sub);
+  } else {
+    var low=arr.reduce(function(a,b){return b.kg<a.kg?b:a;});
+    h+=tile("Laveste",fmt(low.kg),"kg",dLabel(low.dn));
+  }
+  el.innerHTML=h;
+}
+
+/* ---------- SVG helpers ---------- */
+var NS="http://www.w3.org/2000/svg";
+function s(tag,attrs,parent){var e=document.createElementNS(NS,tag);for(var k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e;}
+function niceStep(span,target){var raw=span/target,p=Math.pow(10,Math.floor(Math.log10(raw))),m=raw/p;return (m<=1?1:m<=2?2:m<=2.5?2.5:m<=5?5:10)*p;}
+function cssVar(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+
+function placeholder(el,text){el.innerHTML='<div class="placeholder">'+text+'</div>';}
+
+function drawTrend(arrAll,tN){
+  var el=$("trendChart");
+  var arr=range?arrAll.filter(function(p){return p.dn>tN-range;}):arrAll;
+  $("goalLegend").classList.add("hidden");
+  if(arrAll.length<2){placeholder(el,"Grafen tegnes når du har minst 2 målinger.");return;}
+  if(arr.length<2){placeholder(el,"For få målinger i valgt periode – prøv «Alt».");return;}
+  var W=Math.max(280,el.clientWidth||320),H=230,m={l:34,r:10,t:10,b:24};
+  var x0=arr[0].dn,x1=arr[arr.length-1].dn;if(x1===x0){x0-=1;x1+=1;}
+  var ys=[];arr.forEach(function(p){ys.push(p.kg,p.ra);});
+  var lo=Math.min.apply(null,ys),hi=Math.max.apply(null,ys);
+  var showGoal=goal!=null&&goal>=lo-3&&goal<=hi+3;
+  if(showGoal){lo=Math.min(lo,goal);hi=Math.max(hi,goal);}
+  $("goalLegend").classList.toggle("hidden",!showGoal);
+  if(hi-lo<1){var c=(hi+lo)/2;lo=c-.5;hi=c+.5;}
+  var padY=(hi-lo)*.1;lo-=padY;hi+=padY;
+  var step=niceStep(hi-lo,4);lo=Math.floor(lo/step)*step;hi=Math.ceil(hi/step)*step;
+  var X=function(d){return m.l+(d-x0)/(x1-x0)*(W-m.l-m.r);};
+  var Y=function(v){return m.t+(hi-v)/(hi-lo)*(H-m.t-m.b);};
+  el.innerHTML="";
+  var svg=s("svg",{viewBox:"0 0 "+W+" "+H,height:H,role:"img","aria-label":"Vektutvikling med 7-dagers snitt"},el);
+  // grid
+  for(var v=lo;v<=hi+1e-9;v+=step){
+    s("line",{x1:m.l,x2:W-m.r,y1:Y(v),y2:Y(v),stroke:"var(--grid)","stroke-width":1},svg);
+    var t=s("text",{x:m.l-6,y:Y(v)+4,"text-anchor":"end"},svg);t.textContent=fmt(v,step<1?1:0);
+  }
+  // x ticks
+  var nT=Math.min(4,Math.max(2,Math.floor((W-m.l-m.r)/90)));
+  for(var i=0;i<nT;i++){
+    var d=Math.round(x0+(x1-x0)*i/(nT-1));
+    var tx=s("text",{x:X(d),y:H-6,"text-anchor":i===0?"start":(i===nT-1?"end":"middle")},svg);tx.textContent=dLabel(d);
+  }
+  if(showGoal){
+    s("line",{x1:m.l,x2:W-m.r,y1:Y(goal),y2:Y(goal),stroke:"var(--text-3)","stroke-width":1.5,"stroke-dasharray":"5 4"},svg);
+  }
+  // dots
+  arr.forEach(function(p){s("circle",{cx:X(p.dn),cy:Y(p.kg),r:4,fill:"var(--dot)",stroke:"var(--surface)","stroke-width":2},svg);});
+  // rolling avg line
+  var dpath=arr.map(function(p,i){return (i?"L":"M")+X(p.dn).toFixed(1)+" "+Y(p.ra).toFixed(1);}).join("");
+  s("path",{d:dpath,fill:"none",stroke:"var(--s1)","stroke-width":2.25,"stroke-linejoin":"round","stroke-linecap":"round"},svg);
+  var lastP=arr[arr.length-1];
+  s("circle",{cx:X(lastP.dn),cy:Y(lastP.ra),r:4.5,fill:"var(--s1)",stroke:"var(--surface)","stroke-width":2},svg);
+  // hover layer
+  var cross=s("line",{y1:m.t,y2:H-m.b,stroke:"var(--text-3)","stroke-width":1,opacity:0},svg);
+  var hDot=s("circle",{r:5.5,fill:"var(--dot)",stroke:"var(--surface)","stroke-width":2,opacity:0},svg);
+  var hAvg=s("circle",{r:5,fill:"var(--s1)",stroke:"var(--surface)","stroke-width":2,opacity:0},svg);
+  var tip=document.createElement("div");tip.className="tip";el.appendChild(tip);
+  var hit=s("rect",{x:m.l-10,y:0,width:W-m.l-m.r+20,height:H,fill:"transparent"},svg);
+  function show(evt){
+    var r=svg.getBoundingClientRect(),px=(evt.clientX-r.left)*(W/r.width);
+    var best=arr[0],bd=1e9;arr.forEach(function(p){var dd=Math.abs(X(p.dn)-px);if(dd<bd){bd=dd;best=p;}});
+    var cx=X(best.dn);
+    cross.setAttribute("x1",cx);cross.setAttribute("x2",cx);cross.setAttribute("opacity",.6);
+    hDot.setAttribute("cx",cx);hDot.setAttribute("cy",Y(best.kg));hDot.setAttribute("opacity",1);
+    hAvg.setAttribute("cx",cx);hAvg.setAttribute("cy",Y(best.ra));hAvg.setAttribute("opacity",1);
+    tip.innerHTML='<div class="tl">'+dLabel(best.dn,{weekday:"short",day:"numeric",month:"short"})+'</div><div><b class="num">'+fmt(best.kg)+' kg</b> veid</div><div class="num" style="color:var(--s1)">'+fmt(best.ra)+' kg snitt</div>';
+    tip.style.display="block";
+    var sx=cx*(r.width/W),tw=tip.offsetWidth;
+    tip.style.left=Math.min(Math.max(0,sx-tw/2),r.width-tw)+"px";tip.style.top="-6px";
+    tip.style.transform="translateY(-100%)";
+  }
+  function hide(){tip.style.display="none";[cross,hDot,hAvg].forEach(function(e){e.setAttribute("opacity",0);});}
+  hit.addEventListener("pointermove",show);hit.addEventListener("pointerdown",show);
+  hit.addEventListener("pointerleave",function(e){if(e.pointerType==="mouse")hide();});
+  document.addEventListener("pointerdown",function(e){if(!el.contains(e.target))hide();},{passive:true});
+}
+
+function barPath(x,w,y0,y1,rad){
+  // rounded on the end away from baseline
+  var h=Math.abs(y1-y0);rad=Math.min(rad,w/2,h);
+  if(y1<y0){ // up
+    return "M"+x+" "+y0+"V"+(y1+rad)+"Q"+x+" "+y1+" "+(x+rad)+" "+y1+"H"+(x+w-rad)+"Q"+(x+w)+" "+y1+" "+(x+w)+" "+(y1+rad)+"V"+y0+"Z";
+  }
+  return "M"+x+" "+y0+"V"+(y1-rad)+"Q"+x+" "+y1+" "+(x+rad)+" "+y1+"H"+(x+w-rad)+"Q"+(x+w)+" "+y1+" "+(x+w)+" "+(y1-rad)+"V"+y0+"Z";
+}
+
+function drawWeeks(wk,tN){
+  var el=$("weekChart");
+  var changes=[];
+  for(var i=1;i<wk.length;i++) changes.push({ws:wk[i].ws,d:wk[i].avg-wk[i-1].avg,cur:wk[i].ws===weekStart(tN),n:wk[i].n,avg:wk[i].avg,prev:wk[i-1]});
+  $("weekLegend").classList.toggle("hidden",!changes.length);
+  if(!changes.length){
+    placeholder(el,wk.length?"Vises når du har målinger fra to ulike uker – altså fra mandag "+dLabel(wk[0].ws+7,{day:"numeric",month:"long"})+".":"Vises når du har målinger fra to ulike uker.");
+    return;
+  }
+  changes=changes.slice(-12);
+  var W=Math.max(280,el.clientWidth||320),H=190,m={l:34,r:8,t:18,b:24};
+  var mx=Math.max(.5,Math.max.apply(null,changes.map(function(c){return Math.abs(c.d);})));
+  var step=niceStep(mx,2);mx=Math.ceil(mx/step)*step;
+  var Y=function(v){return m.t+(mx-v)/(2*mx)*(H-m.t-m.b);};
+  var band=(W-m.l-m.r)/Math.max(changes.length,4),bw=Math.min(28,band*.62);
+  el.innerHTML="";
+  var svg=s("svg",{viewBox:"0 0 "+W+" "+H,height:H,role:"img","aria-label":"Endring i ukesnitt fra uke til uke"},el);
+  for(var v=-mx;v<=mx+1e-9;v+=step){
+    s("line",{x1:m.l,x2:W-m.r,y1:Y(v),y2:Y(v),stroke:v===0?"var(--text-3)":"var(--grid)","stroke-width":1,opacity:v===0?.6:1},svg);
+    var t=s("text",{x:m.l-6,y:Y(v)+4,"text-anchor":"end"},svg);t.textContent=v===0?"0":fmtSigned(v,step<1?1:0);
+  }
+  var tip=document.createElement("div");tip.className="tip";el.appendChild(tip);
+  changes.forEach(function(c,i){
+    var cx=m.l+band*i+band/2,x=cx-bw/2,y0=Y(0),y1=Y(c.d);
+    if(Math.abs(y1-y0)<2)y1=y0+(c.d<0?2:-2);
+    var col=c.d<=0?"var(--s1)":"var(--up)";
+    var p=s("path",{d:barPath(x,bw,y0,y1,4),fill:col,opacity:c.cur?.55:1},svg);
+    if(c.cur) p.setAttribute("stroke",col),p.setAttribute("stroke-dasharray","3 2");
+    var lab=s("text",{x:cx,y:H-6,"text-anchor":"middle"},svg);lab.textContent=(c.cur?"nå":"u"+isoWeek(c.ws));
+    if(i===changes.length-1){
+      var vl=s("text",{x:cx,y:c.d<=0?y1+13:y1-5,"text-anchor":"middle",style:"fill:var(--text-2);font-weight:600"},svg);vl.textContent=fmtSigned(c.d);
+    }
+    var hr=s("rect",{x:cx-band/2,y:0,width:band,height:H,fill:"transparent"},svg);
+    var showTip=function(){
+      tip.innerHTML='<div class="tl">Uke '+isoWeek(c.ws)+(c.cur?" (hittil)":"")+'</div><div><b class="num">'+fmtSigned(c.d)+' kg</b></div><div class="tl num">'+fmt(c.prev.avg)+' → '+fmt(c.avg)+' kg</div>';
+      tip.style.display="block";
+      var r=svg.getBoundingClientRect(),sx=cx*(r.width/W),tw=tip.offsetWidth;
+      tip.style.left=Math.min(Math.max(0,sx-tw/2),r.width-tw)+"px";tip.style.top="-6px";tip.style.transform="translateY(-100%)";
+    };
+    hr.addEventListener("pointerenter",showTip);hr.addEventListener("pointerdown",showTip);
+    hr.addEventListener("pointerleave",function(e){if(e.pointerType==="mouse")tip.style.display="none";});
+  });
+  document.addEventListener("pointerdown",function(e){if(!el.contains(e.target))tip.style.display="none";},{passive:true});
+}
+
+function renderWeekTable(wk,tN){
+  var el=$("weekTable");
+  if(!wk.length){el.innerHTML='<div class="tiny">Ingen data ennå.</div>';return;}
+  var rows=wk.slice().reverse().slice(0,12),h='<table><thead><tr><th>Uke</th><th class="r">Snitt</th><th class="r">Endring</th><th class="r">Dager</th></tr></thead><tbody>';
+  rows.forEach(function(w){
+    var idx=wk.indexOf(w),prev=idx>0?wk[idx-1]:null,cur=w.ws===weekStart(tN);
+    h+='<tr><td>Uke '+isoWeek(w.ws)+(cur?' <span class="tiny">(hittil)</span>':'')+'<div class="tiny">'+dLabel(w.ws)+' – '+dLabel(w.ws+6)+'</div></td>'+
+       '<td class="r num"><b>'+fmt(w.avg)+'</b></td>'+
+       '<td class="r num">'+(prev?fmtSigned(w.avg-prev.avg):'<span class="tiny">–</span>')+'</td>'+
+       '<td class="r num">'+w.n+'</td></tr>';
+  });
+  el.innerHTML=h+'</tbody></table>';
+}
+
+var armedDelete=null, editing=null, savedRow=null, histWeeks=3;
+function renderHistory(arr){
+  var el=$("history");
+  var oldIn=$("edKg"),keep=oldIn&&editing?{v:oldIn.value,focus:document.activeElement===oldIn}:null;
+  if(!arr.length){el.innerHTML='<div class="tiny">Ingen målinger ennå.</div>';return;}
+  var list=arr.slice().reverse(),wk=weeks(arr),wkMap={};
+  wk.forEach(function(w){wkMap[w.ws]=w;});
+  var groups=[];list.forEach(function(p){var ws=weekStart(p.dn);if(!groups.length||groups[groups.length-1].ws!==ws)groups.push({ws:ws,items:[]});groups[groups.length-1].items.push(p);});
+  var tN=toDay(todayStr()),h="";
+  groups.slice(0,histWeeks).forEach(function(g){
+    var w=wkMap[g.ws],idx=wk.indexOf(w),prevW=idx>0?wk[idx-1]:null,cur=g.ws===weekStart(tN);
+    h+='<div class="hist-wk"><b>Uke '+isoWeek(g.ws)+(cur?' <span class="tiny">(hittil)</span>':'')+'</b><span class="num">snitt <b>'+fmt(w.avg)+' kg</b>'+(prevW?' ('+fmtSigned(w.avg-prevW.avg)+')':'')+' · '+w.n+' d</span></div>';
+    g.items.forEach(function(p){
+      var prev=list[list.indexOf(p)+1];
+      var dl=dLabel(p.dn,{weekday:"long",day:"numeric",month:"short"});
+      if(editing===p.d){
+        h+='<div class="hist-row editing" data-d="'+p.d+'"><div class="d"><b>'+dl+'</b></div>'+
+           '<div class="ed-wrap"><input type="text" id="edKg" inputmode="decimal" enterkeyhint="done" value="'+fmt(p.kg)+'" aria-label="Vekt for '+dl+'"><span>kg</span></div>'+
+           '<button type="button" class="save" data-act="save">Lagre</button>'+
+           '<button type="button" class="ghost" data-act="cancel">Avbryt</button>'+
+           '<button type="button" class="ghost danger" data-act="del">'+(armedDelete===p.d?"Bekreft sletting":"Slett")+'</button></div>';
+      } else {
+        h+='<div class="hist-row'+(savedRow===p.d?' saved':'')+'" data-d="'+p.d+'" role="button" tabindex="0" aria-label="Endre '+dl+'"><div class="d">'+dl+
+           (prev?'<span class="tiny num">'+fmtSigned(p.kg-prev.kg)+' fra forrige</span>':'<span class="tiny">første måling</span>')+'</div>'+
+           '<div class="k">'+fmt(p.kg)+' kg'+(savedRow===p.d?' ✓':'')+'</div><span class="pen" aria-hidden="true">✎</span></div>';
+      }
+    });
+  });
+  if(groups.length>histWeeks) h+='<button type="button" class="more" id="moreBtn">Vis eldre uker ('+(groups.length-histWeeks)+' til)</button>';
+  else if(histWeeks>3) h+='<button type="button" class="more" id="lessBtn">Vis færre</button>';
+  el.innerHTML=h;
+  var inp=$("edKg");
+  if(inp){
+    if(keep){inp.value=keep.v;if(keep.focus)inp.focus();}
+    inp.addEventListener("focus",function(){var t=this;setTimeout(function(){try{t.select();}catch(e){}},0);});
+    inp.addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();saveInline();}if(e.key==="Escape"){editing=null;armedDelete=null;render();}});
+  }
+}
+function saveInline(){
+  var inp=$("edKg");if(!inp||!editing)return;
+  var kg=parseKg(inp.value);
+  if(isNaN(kg)||kg<20||kg>400){inp.style.outline="2px solid var(--danger)";inp.focus();return;}
+  var d=editing;editing=null;armedDelete=null;savedRow=d;
+  setEntry(d,Math.round(kg*100)/100);
+  clearTimeout(saveInline.t);saveInline.t=setTimeout(function(){savedRow=null;render();},1800);
+}
+
+/* ---------- form / today ---------- */
+var formOpen=false;
+function renderEntryCard(){
+  var t=todayStr(),has=entries[t]!=null,showForm=!has||formOpen;
+  $("todayDone").classList.toggle("hidden",showForm);
+  $("entryForm").classList.toggle("hidden",!showForm);
+  $("fCancel").classList.toggle("hidden",!(has&&formOpen));
+  if(has)$("tdKg").textContent=fmt(entries[t])+" kg";
+}
+function updateFormNote(){
+  renderEntryCard();
+  var d=$("fDate").value,note=$("formNote");
+  if(note.dataset.flash) return;
+  if(d && entries[d]!=null){
+    note.className="form-note";
+    note.textContent=(d===todayStr()?"Dagens vekt: ":"Registrert for denne datoen: ")+fmt(entries[d])+" kg – lagre for å endre.";
+    $("fBtn").textContent="Oppdater";
+  } else {
+    note.className="form-note";note.textContent="";
+    $("fBtn").textContent="Lagre";
+  }
+}
+function flash(msg,cls){
+  var collapsed=!$("todayDone").classList.contains("hidden");
+  var note=collapsed?$("tdNote"):$("formNote");
+  note.textContent=msg;if(!collapsed){note.className="form-note "+(cls||"");note.dataset.flash="1";}
+  clearTimeout(flash.t);flash.t=setTimeout(function(){$("tdNote").textContent="";delete $("formNote").dataset.flash;updateFormNote();},2600);
+}
+function openForm(d,prefill){
+  formOpen=true;$("fDate").value=d;$("fKg").value=prefill!=null?fmt(prefill):"";
+  delete $("formNote").dataset.flash;updateFormNote();
+  setTimeout(function(){$("fKg").focus();},50);
+}
+
+$("fDate").value=todayStr();
+$("fDate").max=todayStr();
+$("fDate").addEventListener("change",function(){delete $("formNote").dataset.flash;var d=$("fDate").value;if(entries[d]!=null&&!$("fKg").value)$("fKg").value=fmt(entries[d]);updateFormNote();});
+$("tdEdit").addEventListener("click",function(){openForm(todayStr(),entries[todayStr()]);});
+$("tdOther").addEventListener("click",function(){var y=fromDay(toDay(todayStr())-1);openForm(y,entries[y]);});
+$("fCancel").addEventListener("click",function(){formOpen=false;$("fKg").value="";$("fDate").value=todayStr();delete $("formNote").dataset.flash;updateFormNote();});
+$("entryForm").addEventListener("submit",function(e){
+  e.preventDefault();
+  var d=$("fDate").value,kg=parseKg($("fKg").value);
+  if(!d){flash("Velg en dato.","err");return;}
+  if(isNaN(kg)||kg<20||kg>400){flash("Skriv vekten som et tall, f.eks. 82,4","err");return;}
+  var existed=entries[d]!=null;
+  formOpen=false;
+  setEntry(d,Math.round(kg*100)/100);
+  $("fKg").value="";$("fKg").blur();
+  $("fDate").value=todayStr();
+  var when=d===todayStr()?"":" for "+dLabel(toDay(d),{weekday:"short",day:"numeric",month:"short"});
+  flash((existed?"Oppdatert":"Lagret")+when+": "+fmt(kg)+" kg ✓","ok");
+});
+
+/* ---------- history actions ---------- */
+$("history").addEventListener("click",function(e){
+  var b=e.target.closest("button");
+  if(b&&b.id==="moreBtn"){histWeeks+=4;render();return;}
+  if(b&&b.id==="lessBtn"){histWeeks=3;render();return;}
+  var row=e.target.closest(".hist-row");if(!row)return;
+  var d=row.dataset.d;
+  if(row.classList.contains("editing")){
+    if(!b)return;
+    var act=b.dataset.act;
+    if(act==="save")saveInline();
+    else if(act==="cancel"){editing=null;armedDelete=null;render();}
+    else if(act==="del"){
+      if(armedDelete===d){armedDelete=null;editing=null;setEntry(d,null);}
+      else{armedDelete=d;render();clearTimeout(renderHistory.t);renderHistory.t=setTimeout(function(){if(armedDelete){armedDelete=null;render();}},4000);}
+    }
+    return;
+  }
+  editing=d;armedDelete=null;render();
+  var er=document.querySelector(".hist-row.editing");
+  if(er&&er.scrollIntoView)er.scrollIntoView({block:"nearest",behavior:"smooth"});
+});
+$("history").addEventListener("keydown",function(e){
+  var row=e.target.closest(".hist-row");
+  if(row&&!row.classList.contains("editing")&&(e.key==="Enter"||e.key===" ")){e.preventDefault();row.click();}
+});
+$("rangeSeg").addEventListener("click",function(e){
+  var b=e.target.closest("button");if(!b)return;
+  range=+b.dataset.r;[].forEach.call(this.children,function(c){c.classList.toggle("on",c===b);});
+  render();
+});
+
+/* ---------- mutations (local first, then cloud) ---------- */
+function setEntry(d,kg){
+  if(kg==null) delete entries[d]; else entries[d]=kg;
+  cacheLocal();render();
+  persistEntry(d,kg);
+}
+function setGoal(g){
+  goal=g;cacheLocal();render();persistGoal(g);
+}
+function wait(ms){return new Promise(function(r){setTimeout(r,ms);});}
+async function cloudWrite(fn){
+  try{await fn();return true;}
+  catch(e){
+    if(e&&e.code==="unavailable"){await wait(600+Math.random()*800);try{await fn();return true;}catch(e2){}}
+    return false;
+  }
+}
+async function persistEntry(d,kg){
+  if(mode==="cloud"&&col){
+    var ref=col.doc("w-"+d);
+    var ok=await cloudWrite(function(){return kg==null?ref.delete():ref.set({date:d,kg:kg});});
+    if(ok){delete pending.entries[d];savePending();return;}
+  }
+  if(trackPending){pending.entries[d]=kg;savePending();}
+}
+async function persistGoal(g){
+  if(mode==="cloud"&&col){
+    var ok=await cloudWrite(function(){return col.doc("settings").set({goal:g});});
+    if(ok){delete pending.goal;savePending();return;}
+  }
+  if(trackPending){pending.goal=g;savePending();}
+}
+function hasPending(){return Object.keys(pending.entries).length>0||pending.goal!==undefined;}
+async function flushPending(){
+  var keys=Object.keys(pending.entries);
+  for(var i=0;i<keys.length;i++){
+    var d=keys[i],kg=pending.entries[d],ref=col.doc("w-"+d);
+    var ok=await cloudWrite(function(){return kg==null?ref.delete():ref.set({date:d,kg:kg});});
+    if(ok){delete pending.entries[d];savePending();}
+  }
+  if(pending.goal!==undefined){
+    var g=pending.goal;
+    if(await cloudWrite(function(){return col.doc("settings").set({goal:g});})){delete pending.goal;savePending();}
+  }
+}
+
+/* ---------- sync status ---------- */
+function setSync(kind,text){var el=$("sync");el.className="sync "+(kind||"");el.querySelector("span").textContent=text;}
+
+/* ---------- cloud (only when hosted with storage available) ---------- */
+async function initCloud(){
+  if(!(window.claude&&typeof window.claude.use==="function")){
+    trackPending=false;try{localStorage.removeItem(LS_PENDING);}catch(e){}
+    setSync("",storageOK?"Lagret lokalt i denne nettleseren på denne enheten":"Lagring ikke tilgjengelig – ta backup");
+    return;
+  }
+  setSync("","Kobler til lagring …");
+  try{
+    var res=await Promise.all([window.claude.use("db"),window.claude.use("user")]);
+    var db=res[0],user=res[1];
+    if(!db||!user){setSync("","Lagret lokalt i denne nettleseren");return;}
+    var uid=await user.id();
+    if(!uid){setSync("","Lagret lokalt i denne nettleseren");return;}
+    col=db.collection("data/users/"+uid);
+    var confirmed=false;
+    var timer=setTimeout(function(){if(!confirmed)setSync("warn","Får ikke kontakt med lagringen – viser data lagret på enheten");},10000);
+    col.onSnapshot(function(snap){
+      var next={},g=null;
+      snap.docs.forEach(function(doc){
+        var v=doc.data();if(!v)return;
+        if(doc.id==="settings"){g=(typeof v.goal==="number")?v.goal:null;}
+        else if(doc.id.indexOf("w-")===0&&typeof v.kg==="number"&&/^\d{4}-\d\d-\d\d$/.test(v.date||doc.id.slice(2))){next[doc.id.slice(2)]=v.kg;}
+      });
+      if(!snap.metadata.fromCache&&!confirmed){
+        confirmed=true;clearTimeout(timer);mode="cloud";
+        if(hasPending()) flushPending();
+      }
+      if(!confirmed&&snap.empty) return; // don't replace local data with an empty cached view
+      // overlay anything not yet written
+      Object.keys(pending.entries).forEach(function(d){var kg=pending.entries[d];if(kg==null)delete next[d];else next[d]=kg;});
+      if(pending.goal!==undefined) g=pending.goal;
+      entries=next;goal=g;cacheLocal();render();
+      if(confirmed) setSync("cloud","Synkronisert med Claude-kontoen din – samme data på alle enheter");
+    },function(err){
+      clearTimeout(timer);mode="local";col=null;
+      setSync("warn","Lagret lokalt i denne nettleseren (synk utilgjengelig)");
+    });
+  }catch(e){
+    setSync("","Lagret lokalt i denne nettleseren");
+  }
+}
+
+/* ---------- settings ---------- */
+$("goalSave").addEventListener("click",function(){
+  var g=parseKg($("goalInput").value);
+  if(isNaN(g)||g<20||g>400){$("goalNote").textContent="Skriv målet som et tall, f.eks. 78";return;}
+  $("goalInput").value="";setGoal(Math.round(g*10)/10);
+});
+$("goalClear").addEventListener("click",function(){$("goalInput").value="";setGoal(null);});
+
+function backupJSON(){return JSON.stringify({app:"vektlogg",version:1,exported:new Date().toISOString(),goal:goal,entries:entries});}
+$("exportCopy").addEventListener("click",function(){
+  var txt=backupJSON();$("ioText").value=txt;
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(function(){$("ioNote").textContent="Kopiert ✓ – lim inn i f.eks. Notater.";},function(){$("ioNote").textContent="Merk teksten over og kopier den manuelt.";});
+  } else $("ioNote").textContent="Merk teksten over og kopier den manuelt.";
+});
+var inFrame=(function(){try{return window.top!==window;}catch(e){return true;}})();
+if(inFrame) $("exportFile").classList.add("hidden");
+$("exportFile").addEventListener("click",function(){
+  try{
+    var blob=new Blob([backupJSON()],{type:"application/json"}),a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);a.download="vektlogg-backup-"+todayStr()+".json";document.body.appendChild(a);a.click();
+    setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},1000);
+    $("ioNote").textContent="Fil lastet ned.";
+  }catch(e){$("ioNote").textContent="Nedlasting støttes ikke her – bruk «Kopier backup».";}
+});
+function importText(txt){
+  try{
+    var o=JSON.parse(txt),src=o.entries||o,n=0;
+    var pairs=Array.isArray(src)?src.map(function(r){return [r.date||r.d,r.kg];}):Object.keys(src).map(function(k){return [k,src[k]];});
+    pairs.forEach(function(p){
+      var d=p[0],kg=typeof p[1]==="number"?p[1]:parseKg(p[1]);
+      if(/^\d{4}-\d\d-\d\d$/.test(d)&&!isNaN(kg)&&kg>=20&&kg<=400){
+        if(entries[d]!==kg){entries[d]=kg;persistEntry(d,kg);n++;}
+      }
+    });
+    if(typeof o.goal==="number"&&o.goal!==goal){goal=o.goal;persistGoal(goal);}
+    cacheLocal();render();
+    $("ioNote").textContent=n?("Importerte "+n+" måling"+(n===1?"":"er")+" ✓"):"Ingen nye målinger i backupen.";
+  }catch(e){$("ioNote").textContent="Klarte ikke å lese backupen – sjekk at hele teksten er med.";}
+}
+$("importBtn").addEventListener("click",function(){var t=$("ioText").value.trim();if(t)importText(t);else $("ioNote").textContent="Lim inn backup-tekst først.";});
+$("importFile").addEventListener("change",function(){
+  var f=this.files&&this.files[0];if(!f)return;
+  var r=new FileReader();r.onload=function(){importText(String(r.result));};r.readAsText(f);this.value="";
+});
+var wipeArmed=false;
+$("wipeBtn").addEventListener("click",function(){
+  if(!wipeArmed){wipeArmed=true;this.textContent="Trykk igjen for å slette alt";$("wipeNote").textContent=" Kan ikke angres – ta backup først.";
+    var b=this;setTimeout(function(){wipeArmed=false;b.textContent="Slett alt";$("wipeNote").textContent="";},5000);return;}
+  wipeArmed=false;this.textContent="Slett alt";$("wipeNote").textContent=" Slettet.";
+  var keys=Object.keys(entries);entries={};cacheLocal();render();
+  (async function(){for(var i=0;i<keys.length;i++)await persistEntry(keys[i],null);await persistGoal(null);})();
+});
+
+/* ---------- boot ---------- */
+render();
+var rT;window.addEventListener("resize",function(){clearTimeout(rT);rT=setTimeout(render,120);});
+document.addEventListener("visibilitychange",function(){if(!document.hidden){if($("fDate").value>todayStr()||!$("fKg").value)$("fDate").value=todayStr();$("fDate").max=todayStr();render();}});
+initCloud();
+})();
+</script>
+</body>
+</html>
