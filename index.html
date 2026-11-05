@@ -21,6 +21,8 @@
   --good:#0a7d2c; --good-soft:rgba(10,125,44,.10);
   --neutral-soft:rgba(82,81,78,.10);
   --danger:#c62f2f;
+  --mens:#d4467c; --mens-band:rgba(232,123,164,.20); --mens-soft:rgba(232,123,164,.18);
+  --pms:#6250d6; --pms-band:rgba(98,80,214,.13); --pms-soft:rgba(98,80,214,.13);
   --radius:16px;
 }
 @media (prefers-color-scheme: dark){
@@ -34,6 +36,8 @@
     --good:#4cc26b; --good-soft:rgba(76,194,107,.14);
     --neutral-soft:rgba(195,194,183,.12);
     --danger:#ef6b6b;
+    --mens:#e66f9b; --mens-band:rgba(213,81,129,.24); --mens-soft:rgba(213,81,129,.24);
+    --pms:#9085e9; --pms-band:rgba(144,133,233,.18); --pms-soft:rgba(144,133,233,.20);
   }
 }
 *{box-sizing:border-box}
@@ -54,7 +58,7 @@ header .today{color:var(--text-3);font-size:14px}
 
 /* Form */
 form.entry{display:grid;grid-template-columns:1fr;gap:12px}
-label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--text-2)}
+.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--text-2)}
 input[type=date],input[type=text],input[type=number],textarea{
   font:inherit;font-size:17px;color:var(--text);background:var(--surface-2);
   border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;min-height:46px}
@@ -144,7 +148,9 @@ tr:last-child td{border-bottom:0}
 .today-done .info{flex:1}
 .today-done .kgv{font-size:22px;font-weight:700}
 .linkbtn{background:none;border:0;color:var(--s1);padding:6px 0;min-height:0;font-size:14px}
-.td-foot{display:flex;justify-content:space-between;align-items:center;margin-top:8px;gap:8px}
+.td-foot{display:flex;flex-direction:column;align-items:flex-start;margin-top:8px;gap:2px}
+#tdNote{color:var(--good)}
+#tdNote:empty{display:none}
 .btnrow{display:flex;gap:10px}
 .btnrow .primary{flex:1}
 .hist-row .d{flex:1;font-size:14px}
@@ -167,6 +173,60 @@ textarea{font-size:13px;min-height:90px;font-family:ui-monospace,Menlo,monospace
 .sync.warn i{background:var(--up)}
 .banner{background:rgba(235,104,52,.12);border:1px solid rgba(235,104,52,.35);color:var(--text);border-radius:12px;padding:10px 12px;font-size:14px;display:none}
 .hidden{display:none!important}
+/* cycle */
+.tag{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;color:var(--text);white-space:nowrap}
+.tag i{width:8px;height:8px;border-radius:50%;flex:none}
+.tag.mens{background:var(--mens-soft)} .tag.mens i{background:var(--mens)}
+.tag.pms{background:var(--pms-soft)} .tag.pms i{background:var(--pms)}
+.cyc-seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.cyc-seg button{min-height:44px;font-size:15px;color:var(--text-2);background:var(--surface-2);display:flex;align-items:center;justify-content:center;gap:6px}
+.cyc-seg button i{width:9px;height:9px;border-radius:50%;flex:none}
+.cyc-seg button[data-c="mens"] i{background:var(--mens)}
+.cyc-seg button[data-c="pms"] i{background:var(--pms)}
+.cyc-seg button.on{color:var(--text);font-weight:600;border-width:2px;padding:7px 13px}
+.cyc-seg button.on[data-c=""]{border-color:var(--text-3)}
+.cyc-seg button.on[data-c="mens"]{border-color:var(--mens);background:var(--mens-soft)}
+.cyc-seg button.on[data-c="pms"]{border-color:var(--pms);background:var(--pms-soft)}
+.f .opt{font-size:12px;color:var(--text-3)}
+.td-cyc{margin-top:12px;padding-top:12px;border-top:1px solid var(--grid)}
+.td-cyc .tiny{margin-bottom:6px}
+.sw-band{width:12px;height:12px;border-radius:3px}
+.ask{border-color:var(--pms);background:linear-gradient(0deg,var(--pms-soft),var(--pms-soft)),var(--surface)}
+.ask h2{font-size:17px;margin:0 0 6px}
+.ask p{margin:0 0 12px;font-size:15px;color:var(--text-2)}
+.ask .btnrow button{flex:1;min-height:46px;font-size:16px}
+.ask .btnrow .primary{flex:1.3}
+.cstats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
+.cbox{border-radius:12px;padding:12px;border:1px solid var(--line)}
+.cbox.mens{background:var(--mens-soft)} .cbox.pms{background:var(--pms-soft)}
+.cbox .tag{background:none;padding:0}
+.cbox .cv{font-size:26px;font-weight:700;margin-top:6px;letter-spacing:-.01em}
+.cbox .cv small{font-size:14px;font-weight:600;color:var(--text-2);margin-left:2px}
+.cbox .cl{font-size:13px;color:var(--text-2)}
+.cbox .cm{font-size:12px;color:var(--text-3);margin-top:6px;line-height:1.35}
+.cbox .ce{font-size:14px;color:var(--text-3);margin-top:8px;line-height:1.35}
+.hist-row .tags{display:flex;gap:6px;margin-top:3px}
+.hist-row .k.none{color:var(--text-3);font-weight:500;font-size:13px}
+.hist-row.editing .cyc-seg{flex-basis:100%}
+.hist-row.editing .cyc-seg button{min-height:40px;font-size:14px}
+/* settings */
+.set-group{margin-top:16px;padding-top:16px;border-top:1px solid var(--grid)}
+.set-group h3{font-size:16px;margin:0 0 4px}
+.set-group p{margin:0 0 10px;font-size:14px;color:var(--text-2)}
+.sw-row{display:flex;align-items:center;gap:14px;justify-content:space-between}
+.sw-row h3{margin:0 0 2px}
+.sw-row p{margin:0}
+.switch{position:relative;width:51px;height:31px;flex:none}
+.switch input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer;z-index:1}
+.switch span{position:absolute;inset:0;background:var(--line);border-radius:31px;transition:background .2s}
+.switch span::before{content:"";position:absolute;width:27px;height:27px;left:2px;top:2px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.switch input:checked + span{background:#34c759}
+.switch input:checked + span::before{transform:translateX(20px)}
+.stack{display:flex;flex-direction:column;gap:8px}
+.stack button{width:100%;min-height:46px;font-size:16px}
+.goal-row{display:flex;gap:8px}
+.goal-row .kg-field{flex:1}
+.goal-row button{min-height:46px}
 </style>
 </head>
 <body>
@@ -177,6 +237,13 @@ textarea{font-size:13px;min-height:90px;font-family:ui-monospace,Menlo,monospace
   </header>
 
   <div class="banner" id="storageBanner">Denne nettleseren lar ikke siden lagre data permanent akkurat nå. Det du legger inn kan forsvinne når du lukker. Bruk «Backup» nederst for å ta vare på dataene.</div>
+
+  <section class="card ask hidden" id="cycleAsk">
+    <h2>Nytt: syklusfunksjoner</h2>
+    <p>Vil du registrere <b>mens</b> og <b>PMS</b> sammen med vekten? Da ser du i grafen når de inntraff, og får statistikk over hvordan vekten pleier å endre seg i de dagene.</p>
+    <div class="btnrow"><button type="button" id="askNo">Nei takk</button><button type="button" class="primary" id="askYes">Ja, slå på</button></div>
+    <div class="tiny" style="margin-top:10px">Valget gjelder bare denne telefonen og kan endres under Innstillinger.</div>
+  </section>
 
   <section class="card">
     <div id="todayDone" class="hidden">
@@ -189,14 +256,19 @@ textarea{font-size:13px;min-height:90px;font-family:ui-monospace,Menlo,monospace
         <button type="button" class="linkbtn" id="tdOther">+ Legg inn for en annen dato</button>
         <span class="tiny" id="tdNote"></span>
       </div>
+      <div class="td-cyc hidden" id="tdCycWrap">
+        <div class="tiny">Syklus i dag</div>
+        <div class="cyc-seg" id="tdCyc"></div>
+      </div>
     </div>
     <form class="entry" id="entryForm" autocomplete="off">
       <label class="f">Dato
         <input type="date" id="fDate" required>
       </label>
-      <label class="f">Vekt
+      <label class="f"><span>Vekt <span class="opt hidden" id="fKgOpt">· kan stå tom hvis du bare logger syklus</span></span>
         <div class="kg-field"><input type="text" id="fKg" inputmode="decimal" placeholder="f.eks. 82,4" enterkeyhint="done"><span>kg</span></div>
       </label>
+      <div class="f hidden" id="fCycWrap"><span>Syklus</span><div class="cyc-seg" id="fCyc"></div></div>
       <div class="form-note" id="formNote"></div>
       <div class="btnrow"><button type="button" id="fCancel" class="hidden">Avbryt</button><button class="primary" type="submit" id="fBtn">Lagre</button></div>
     </form>
@@ -219,8 +291,17 @@ textarea{font-size:13px;min-height:90px;font-family:ui-monospace,Menlo,monospace
       <span><i class="sw-dot"></i>Daglig vekt</span>
       <span><i class="sw-line"></i>7-dagers snitt</span>
       <span id="goalLegend" class="hidden"><i class="sw-goal"></i>Mål</span>
+      <span id="pmsLegend" class="hidden"><i class="sw-band" style="background:var(--pms-band);border-bottom:3px solid var(--pms)"></i>PMS</span>
+      <span id="mensLegend" class="hidden"><i class="sw-band" style="background:var(--mens-band);border-bottom:3px solid var(--mens)"></i>Mens</span>
     </div>
     <div class="chart" id="trendChart"></div>
+  </section>
+
+  <section class="card hidden" id="cycleCard">
+    <h2>Syklus og vekt</h2>
+    <div class="small muted">Hvor mye vekten din i snitt avviker fra trenden i dager med mens og PMS.</div>
+    <div class="cstats" id="cycleStats"></div>
+    <div class="tiny" style="margin-top:10px">Trenden regnes ut fra vekten din de andre dagene, to uker før og etter. Kortvarige topper rundt mens og PMS er ofte væske.</div>
   </section>
 
   <section class="card">
@@ -243,34 +324,45 @@ textarea{font-size:13px;min-height:90px;font-family:ui-monospace,Menlo,monospace
   </section>
 
   <details class="card" id="settings">
-    <summary>Innstillinger og backup</summary>
-    <div class="set-block">
-      <h3>Målvekt (valgfritt)</h3>
-      <div class="row">
-        <input type="text" id="goalInput" inputmode="decimal" placeholder="f.eks. 78">
-        <button type="button" id="goalSave">Lagre mål</button>
-        <button type="button" class="ghost" id="goalClear">Fjern</button>
+    <summary>Innstillinger</summary>
+    <div class="set-group">
+      <div class="sw-row">
+        <div><h3>Syklusfunksjoner</h3><p>Registrer mens og PMS, og se dem i grafen.</p></div>
+        <label class="switch" aria-label="Syklusfunksjoner"><input type="checkbox" id="cycleToggle"><span></span></label>
       </div>
-      <div class="tiny" id="goalNote" style="margin-top:6px"></div>
     </div>
-    <div class="set-block">
+    <div class="set-group">
+      <h3>Målvekt</h3>
+      <p id="goalNote">Valgfritt. Viser hvor mye som gjenstår, og når du når målet med dagens tempo.</p>
+      <div class="goal-row">
+        <div class="kg-field"><input type="text" id="goalInput" inputmode="decimal" placeholder="f.eks. 78"><span>kg</span></div>
+        <button type="button" id="goalSave">Lagre</button>
+      </div>
+      <button type="button" class="linkbtn hidden" id="goalClear">Fjern målvekt</button>
+    </div>
+    <div class="set-group">
       <h3>Backup</h3>
-      <p class="small muted" style="margin:0 0 8px">Kopier dataene og lagre dem et trygt sted (f.eks. i Notater). Lim inn igjen nedenfor for å gjenopprette eller flytte til en annen enhet. Import slår sammen med det som finnes.</p>
-      <div class="row">
+      <p>Dataene ligger bare på denne telefonen. Kopier en backup av og til, og lim den inn i f.eks. Notater.</p>
+      <div class="stack">
         <button type="button" id="exportCopy">Kopier backup</button>
-        <button type="button" id="exportFile">Last ned fil</button>
+        <button type="button" id="exportFile">Last ned backup-fil</button>
+        <button type="button" id="restoreOpen">Gjenopprett fra backup</button>
       </div>
-      <textarea id="ioText" placeholder="Backup-tekst vises her / lim inn backup her" style="margin-top:8px"></textarea>
-      <div class="row" style="margin-top:8px">
-        <button type="button" id="importBtn">Importer fra tekst</button>
-        <label class="small muted" style="display:inline-flex;align-items:center;gap:6px">eller fil: <input type="file" id="importFile" accept=".json,application/json,text/plain" style="font-size:13px;max-width:180px"></label>
+      <div id="restoreBox" class="hidden" style="margin-top:10px">
+        <textarea id="ioText" placeholder="Lim inn backup-teksten her"></textarea>
+        <div class="stack" style="margin-top:8px">
+          <button type="button" id="importBtn">Gjenopprett fra tekst</button>
+          <label class="small muted">…eller velg en backup-fil: <input type="file" id="importFile" accept=".json,application/json,text/plain" style="font-size:14px;margin-top:4px;max-width:100%"></label>
+        </div>
+        <div class="tiny" style="margin-top:6px">Gjenoppretting slår sammen med det som allerede finnes.</div>
       </div>
-      <div class="tiny" id="ioNote" style="margin-top:6px"></div>
+      <div class="tiny" id="ioNote" style="margin-top:8px"></div>
     </div>
-    <div class="set-block">
+    <div class="set-group">
       <h3>Slett alle data</h3>
-      <button type="button" class="danger" id="wipeBtn">Slett alt</button>
-      <span class="tiny" id="wipeNote"></span>
+      <p>Fjerner alle målinger fra denne telefonen. Kan ikke angres.</p>
+      <div class="stack"><button type="button" class="danger" id="wipeBtn">Slett alt</button></div>
+      <div class="tiny" id="wipeNote" style="margin-top:6px"></div>
     </div>
   </details>
 
@@ -282,20 +374,27 @@ textarea{font-size:13px;min-height:90px;font-family:ui-monospace,Menlo,monospace
 "use strict";
 
 /* ---------- storage helpers ---------- */
-var LS_ENTRIES="vektlogg.entries.v1", LS_GOAL="vektlogg.goal.v1", LS_PENDING="vektlogg.pending.v1";
+var LS_ENTRIES="vektlogg.entries.v1", LS_GOAL="vektlogg.goal.v1", LS_PENDING="vektlogg.pending.v1", LS_CYCLE="vektlogg.cycle.v1", LS_PREFS="vektlogg.prefs.v1";
 function lsGet(k,def){try{var v=localStorage.getItem(k);return v==null?def:JSON.parse(v);}catch(e){return def;}}
 function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true;}catch(e){return false;}}
 var storageOK=(function(){try{localStorage.setItem("__t","1");localStorage.removeItem("__t");return true;}catch(e){return false;}})();
 
 var entries=lsGet(LS_ENTRIES,{})||{};   // "YYYY-MM-DD" -> kg
 var goal=lsGet(LS_GOAL,null);
+var cycle=lsGet(LS_CYCLE,{})||{};       // "YYYY-MM-DD" -> "mens" | "pms"
+var prefs=lsGet(LS_PREFS,{})||{};       // {cycleOn: true|false}; undefined = not asked yet
+function cycleOn(){return prefs.cycleOn===true;}
+function cyc(d){return cycleOn()?(cycle[d]||null):null;}
+function savePrefs(){lsSet(LS_PREFS,prefs);}
+var CYC_NAME={mens:"Mens",pms:"PMS"};
 var pending=lsGet(LS_PENDING,{entries:{},goal:undefined})||{entries:{}};
 if(!pending.entries) pending.entries={};
+if(!pending.cycle) pending.cycle={};
 var trackPending = location.protocol!=="file:"; // cloud sync only possible when hosted
 var mode="local", col=null;
 
 function cacheLocal(){
-  var ok=lsSet(LS_ENTRIES,entries); lsSet(LS_GOAL,goal);
+  var ok=lsSet(LS_ENTRIES,entries); lsSet(LS_GOAL,goal); lsSet(LS_CYCLE,cycle);
   if(!ok) storageOK=false;
 }
 function savePending(){ if(trackPending) lsSet(LS_PENDING,pending); }
@@ -362,10 +461,76 @@ function render(){
   drawTrend(arr,tN);
   drawWeeks(wk,tN);
   renderWeekTable(wk,tN);
+  renderCycleStats();
   renderHistory(arr);
   updateFormNote();
   $("goalInput").placeholder=goal!=null?fmt(goal):"f.eks. 78";
-  $("goalNote").textContent=goal!=null?"Nåværende mål: "+fmt(goal)+" kg":"";
+  $("goalNote").textContent=goal!=null?"Nåværende mål: "+fmt(goal)+" kg.":"Valgfritt. Viser hvor mye som gjenstår, og når du når målet med dagens tempo.";
+  $("goalClear").classList.toggle("hidden",goal==null);
+  var on=cycleOn();
+  $("cycleAsk").classList.toggle("hidden",prefs.cycleOn!==undefined);
+  $("cycleToggle").checked=on;
+  $("fCycWrap").classList.toggle("hidden",!on);
+  $("fKgOpt").classList.toggle("hidden",!on);
+  $("cycleCard").classList.toggle("hidden",!on);
+}
+
+/* ---------- cycle helpers ---------- */
+function cycSegHTML(val){
+  val=val||"";
+  return [["","Ingen"],["pms","PMS"],["mens","Mens"]].map(function(o){
+    return '<button type="button" data-c="'+o[0]+'" class="'+(val===o[0]?"on":"")+'" aria-pressed="'+(val===o[0])+'">'+(o[0]?'<i></i>':'')+o[1]+'</button>';
+  }).join("");
+}
+function tagHTML(c){return c?'<span class="tag '+c+'"><i></i>'+CYC_NAME[c]+'</span>':"";}
+function regPredict(pts,dn){
+  var mx=avg(pts.map(function(p){return p.dn;})),my=avg(pts.map(function(p){return p.kg;}));
+  var num=0,den=0;pts.forEach(function(p){num+=(p.dn-mx)*(p.kg-my);den+=(p.dn-mx)*(p.dn-mx);});
+  return den?my+num/den*(dn-mx):my;
+}
+function cycleEpisodes(type){
+  // consecutive days of one type (gaps of up to 2 days allowed) = one cycle
+  var days=Object.keys(cycle).filter(function(d){return cycle[d]===type;}).map(toDay).sort(function(a,b){return a-b;});
+  var eps=[];days.forEach(function(dn){var e=eps[eps.length-1];if(e&&dn-e.end<=3){e.end=dn;e.days.push(dn);}else eps.push({start:dn,end:dn,days:[dn]});});
+  return eps;
+}
+function computeCycleStats(){
+  var all=series(),normal=all.filter(function(p){return !cycle[p.d];});
+  var out={};
+  ["mens","pms"].forEach(function(type){
+    var eps=cycleEpisodes(type),used=0,devs=[],peaks=[];
+    eps.forEach(function(e){
+      var ed=[];
+      e.days.forEach(function(dn){
+        var kg=entries[fromDay(dn)];if(kg==null)return;
+        var near=normal.filter(function(p){return Math.abs(p.dn-dn)<=14;});
+        if(near.length<5)return;
+        if(near[near.length-1].dn-near[0].dn<5)return;
+        ed.push(kg-regPredict(near,dn));
+      });
+      if(ed.length){used++;devs=devs.concat(ed);peaks.push(Math.max.apply(null,ed));}
+    });
+    out[type]={cycles:used,total:eps.length,days:devs.length,avg:devs.length?avg(devs):null,peak:peaks.length?avg(peaks):null};
+  });
+  return out;
+}
+function renderCycleStats(){
+  if(!cycleOn())return;
+  var st=computeCycleStats(),h="";
+  ["pms","mens"].forEach(function(type){
+    var r=st[type];
+    h+='<div class="cbox '+type+'"><span class="tag '+type+'"><i></i>'+CYC_NAME[type]+'</span>';
+    if(r.cycles>=2){
+      var dir=r.avg>=0.05?"over":(r.avg<=-0.05?"under":"på");
+      h+='<div class="cv num">'+(dir==="på"?"±0,0":fmtSigned(r.avg))+'<small>kg</small></div>'+
+         '<div class="cl">'+(dir==="på"?"omtrent på trenden":dir+" trenden i snitt")+'</div>'+
+         '<div class="cm num">Typisk topp: '+fmtSigned(r.peak)+' kg<br>'+r.cycles+' sykluser · '+r.days+' dager</div>';
+    } else {
+      h+='<div class="ce">Trenger vektmålinger fra 2 sykluser – '+r.cycles+' av 2 så langt.</div>';
+    }
+    h+='</div>';
+  });
+  $("cycleStats").innerHTML=h;
 }
 
 function weekDotsHTML(w,tN){
@@ -377,6 +542,17 @@ function weekDotsHTML(w,tN){
   return h+'</div>';
 }
 
+function cycleWeekNote(ws,pws){
+  if(!cycleOn())return "";
+  function count(start){var c={mens:0,pms:0};for(var i=0;i<7;i++){var v=cycle[fromDay(start+i)];if(v)c[v]++;}return c;}
+  var st=null;function eff(t){if(!st)st=computeCycleStats();var r=st[t];return r.cycles>=2&&r.avg>=0.1?" (i snitt "+fmtSigned(r.avg)+" kg for deg)":"";}
+  function desc(c){var p=[];if(c.mens)p.push(c.mens+" dag"+(c.mens>1?"er":"")+" med mens");if(c.pms)p.push(c.pms+" PMS-dag"+(c.pms>1?"er":""));return p.join(" og ");}
+  var a=count(ws),b=pws!=null?count(pws):{mens:0,pms:0};
+  var main=a.mens?"mens":(a.pms?"pms":null),prevMain=b.mens?"mens":(b.pms?"pms":null);
+  if(main) return '<div class="hint">Denne uken har '+desc(a)+'. Vekten ligger ofte litt høyere i slike dager'+eff(main)+', så snittet kan være midlertidig høyere.</div>';
+  if(prevMain) return '<div class="hint">Forrige uke hadde '+desc(b)+eff(prevMain)+'. Noe av endringen kan derfor være væske, ikke reell endring.</div>';
+  return "";
+}
 function renderHero(arr,wk,tN){
   var el=$("hero"),ws=weekStart(tN);
   var thisW=wk.find(function(w){return w.ws===ws;});
@@ -417,6 +593,7 @@ function renderHero(arr,wk,tN){
       h+='<div class="sub">'+thisW.n+' måling'+(thisW.n===1?"":"er")+' så langt denne uken.</div>';
     }
     h+=weekDotsHTML(thisW,tN);
+    h+=cycleWeekNote(ws,prevW&&lastWeekIsPrev?prevW.ws:null);
     if(!prevW){
       h+='<div class="hint">Første uke! Fra mandag '+dLabel(ws+7,{day:"numeric",month:"long"})+' ser du hvordan neste ukes snitt står seg mot denne.</div>';
     }
@@ -473,11 +650,14 @@ function placeholder(el,text){el.innerHTML='<div class="placeholder">'+text+'</d
 function drawTrend(arrAll,tN){
   var el=$("trendChart");
   var arr=range?arrAll.filter(function(p){return p.dn>tN-range;}):arrAll;
-  $("goalLegend").classList.add("hidden");
+  $("goalLegend").classList.add("hidden");$("mensLegend").classList.add("hidden");$("pmsLegend").classList.add("hidden");
   if(arrAll.length<2){placeholder(el,"Grafen tegnes når du har minst 2 målinger.");return;}
   if(arr.length<2){placeholder(el,"For få målinger i valgt periode – prøv «Alt».");return;}
   var W=Math.max(280,el.clientWidth||320),H=230,m={l:34,r:10,t:10,b:24};
-  var x0=arr[0].dn,x1=arr[arr.length-1].dn;if(x1===x0){x0-=1;x1+=1;}
+  var x0=arr[0].dn,x1=arr[arr.length-1].dn;
+  var cdays=cycleOn()?Object.keys(cycle).map(function(d){return {dn:toDay(d),c:cycle[d]};}).filter(function(o){return o.dn<=tN&&(range?o.dn>tN-range:o.dn>=arrAll[0].dn-14);}):[];
+  cdays.forEach(function(o){if(o.dn<x0)x0=o.dn;if(o.dn>x1)x1=o.dn;});
+  if(x1===x0){x0-=1;x1+=1;}
   var ys=[];arr.forEach(function(p){ys.push(p.kg,p.ra);});
   var lo=Math.min.apply(null,ys),hi=Math.max.apply(null,ys);
   var showGoal=goal!=null&&goal>=lo-3&&goal<=hi+3;
@@ -501,11 +681,23 @@ function drawTrend(arrAll,tN){
     var d=Math.round(x0+(x1-x0)*i/(nT-1));
     var tx=s("text",{x:X(d),y:H-6,"text-anchor":i===0?"start":(i===nT-1?"end":"middle")},svg);tx.textContent=dLabel(d);
   }
+  // cycle bands (merged runs of the same type)
+  if(cdays.length){
+    cdays.sort(function(a,b){return a.dn-b.dn;});
+    var runs=[];cdays.forEach(function(o){var r=runs[runs.length-1];if(r&&r.c===o.c&&o.dn===r.end+1)r.end=o.dn;else runs.push({c:o.c,start:o.dn,end:o.dn});});
+    var dayW=(W-m.l-m.r)/Math.max(1,x1-x0);
+    runs.forEach(function(r){
+      var xa=Math.max(m.l,X(r.start)-dayW/2),xb=Math.min(W-m.r,X(r.end)+dayW/2);if(xb-xa<3){var mid=(xa+xb)/2;xa=mid-1.5;xb=mid+1.5;}
+      s("rect",{x:xa,y:m.t,width:xb-xa,height:H-m.t-m.b,fill:"var(--"+r.c+"-band)"},svg);
+      s("rect",{x:xa,y:H-m.b-3,width:xb-xa,height:3,fill:"var(--"+r.c+")"},svg);
+      $(r.c+"Legend").classList.remove("hidden");
+    });
+  }
   if(showGoal){
     s("line",{x1:m.l,x2:W-m.r,y1:Y(goal),y2:Y(goal),stroke:"var(--text-3)","stroke-width":1.5,"stroke-dasharray":"5 4"},svg);
   }
   // dots
-  arr.forEach(function(p){s("circle",{cx:X(p.dn),cy:Y(p.kg),r:4,fill:"var(--dot)",stroke:"var(--surface)","stroke-width":2},svg);});
+  arr.forEach(function(p){var c=cyc(p.d);s("circle",{cx:X(p.dn),cy:Y(p.kg),r:c?4.5:4,fill:c?"var(--"+c+")":"var(--dot)",stroke:"var(--surface)","stroke-width":2},svg);});
   // rolling avg line
   var dpath=arr.map(function(p,i){return (i?"L":"M")+X(p.dn).toFixed(1)+" "+Y(p.ra).toFixed(1);}).join("");
   s("path",{d:dpath,fill:"none",stroke:"var(--s1)","stroke-width":2.25,"stroke-linejoin":"round","stroke-linecap":"round"},svg);
@@ -524,7 +716,7 @@ function drawTrend(arrAll,tN){
     cross.setAttribute("x1",cx);cross.setAttribute("x2",cx);cross.setAttribute("opacity",.6);
     hDot.setAttribute("cx",cx);hDot.setAttribute("cy",Y(best.kg));hDot.setAttribute("opacity",1);
     hAvg.setAttribute("cx",cx);hAvg.setAttribute("cy",Y(best.ra));hAvg.setAttribute("opacity",1);
-    tip.innerHTML='<div class="tl">'+dLabel(best.dn,{weekday:"short",day:"numeric",month:"short"})+'</div><div><b class="num">'+fmt(best.kg)+' kg</b> veid</div><div class="num" style="color:var(--s1)">'+fmt(best.ra)+' kg snitt</div>';
+    tip.innerHTML='<div class="tl">'+dLabel(best.dn,{weekday:"short",day:"numeric",month:"short"})+'</div><div><b class="num">'+fmt(best.kg)+' kg</b> veid</div><div class="num" style="color:var(--s1)">'+fmt(best.ra)+' kg snitt</div>'+(cyc(best.d)?'<div style="margin-top:3px">'+tagHTML(cyc(best.d))+'</div>':'');
     tip.style.display="block";
     var sx=cx*(r.width/W),tw=tip.offsetWidth;
     tip.style.left=Math.min(Math.max(0,sx-tw/2),r.width-tw)+"px";tip.style.top="-6px";
@@ -604,31 +796,42 @@ function renderWeekTable(wk,tN){
   el.innerHTML=h+'</tbody></table>';
 }
 
-var armedDelete=null, editing=null, savedRow=null, histWeeks=3;
+var armedDelete=null, editing=null, edCyc="", savedRow=null, histWeeks=3;
 function renderHistory(arr){
   var el=$("history");
   var oldIn=$("edKg"),keep=oldIn&&editing?{v:oldIn.value,focus:document.activeElement===oldIn}:null;
-  if(!arr.length){el.innerHTML='<div class="tiny">Ingen målinger ennå.</div>';return;}
-  var list=arr.slice().reverse(),wk=weeks(arr),wkMap={};
+  var on=cycleOn();
+  var dates=Object.keys(entries);
+  if(on)Object.keys(cycle).forEach(function(d){if(entries[d]==null)dates.push(d);});
+  dates.sort().reverse();
+  if(!dates.length){el.innerHTML='<div class="tiny">Ingen registreringer ennå.</div>';return;}
+  var wList=arr.slice().reverse(),wk=weeks(arr),wkMap={};
   wk.forEach(function(w){wkMap[w.ws]=w;});
-  var groups=[];list.forEach(function(p){var ws=weekStart(p.dn);if(!groups.length||groups[groups.length-1].ws!==ws)groups.push({ws:ws,items:[]});groups[groups.length-1].items.push(p);});
+  var groups=[];dates.forEach(function(d){var dn=toDay(d),ws=weekStart(dn);if(!groups.length||groups[groups.length-1].ws!==ws)groups.push({ws:ws,items:[]});groups[groups.length-1].items.push({d:d,dn:dn,kg:entries[d]});});
   var tN=toDay(todayStr()),h="";
   groups.slice(0,histWeeks).forEach(function(g){
-    var w=wkMap[g.ws],idx=wk.indexOf(w),prevW=idx>0?wk[idx-1]:null,cur=g.ws===weekStart(tN);
-    h+='<div class="hist-wk"><b>Uke '+isoWeek(g.ws)+(cur?' <span class="tiny">(hittil)</span>':'')+'</b><span class="num">snitt <b>'+fmt(w.avg)+' kg</b>'+(prevW?' ('+fmtSigned(w.avg-prevW.avg)+')':'')+' · '+w.n+' d</span></div>';
+    var w=wkMap[g.ws],idx=w?wk.indexOf(w):-1,prevW=idx>0?wk[idx-1]:null,cur=g.ws===weekStart(tN);
+    h+='<div class="hist-wk"><b>Uke '+isoWeek(g.ws)+(cur?' <span class="tiny">(hittil)</span>':'')+'</b>'+
+       (w?'<span class="num">snitt <b>'+fmt(w.avg)+' kg</b>'+(prevW?' ('+fmtSigned(w.avg-prevW.avg)+')':'')+' · '+w.n+' d</span>':'<span>ingen veiinger</span>')+'</div>';
     g.items.forEach(function(p){
-      var prev=list[list.indexOf(p)+1];
-      var dl=dLabel(p.dn,{weekday:"long",day:"numeric",month:"short"});
+      var dl=dLabel(p.dn,{weekday:"long",day:"numeric",month:"short"}),c=cyc(p.d);
       if(editing===p.d){
         h+='<div class="hist-row editing" data-d="'+p.d+'"><div class="d"><b>'+dl+'</b></div>'+
-           '<div class="ed-wrap"><input type="text" id="edKg" inputmode="decimal" enterkeyhint="done" value="'+fmt(p.kg)+'" aria-label="Vekt for '+dl+'"><span>kg</span></div>'+
+           '<div class="ed-wrap"><input type="text" id="edKg" inputmode="decimal" enterkeyhint="done" value="'+(p.kg!=null?fmt(p.kg):'')+'" placeholder="'+(on?'ingen vekt':'')+'" aria-label="Vekt for '+dl+'"><span>kg</span></div>'+
            '<button type="button" class="save" data-act="save">Lagre</button>'+
            '<button type="button" class="ghost" data-act="cancel">Avbryt</button>'+
-           '<button type="button" class="ghost danger" data-act="del">'+(armedDelete===p.d?"Bekreft sletting":"Slett")+'</button></div>';
+           (on?'<div class="cyc-seg" id="edCycSeg">'+cycSegHTML(edCyc)+'</div>':'')+
+           '<button type="button" class="ghost danger" data-act="del">'+(armedDelete===p.d?"Bekreft sletting":"Slett dagen")+'</button></div>';
       } else {
-        h+='<div class="hist-row'+(savedRow===p.d?' saved':'')+'" data-d="'+p.d+'" role="button" tabindex="0" aria-label="Endre '+dl+'"><div class="d">'+dl+
-           (prev?'<span class="tiny num">'+fmtSigned(p.kg-prev.kg)+' fra forrige</span>':'<span class="tiny">første måling</span>')+'</div>'+
-           '<div class="k">'+fmt(p.kg)+' kg'+(savedRow===p.d?' ✓':'')+'</div><span class="pen" aria-hidden="true">✎</span></div>';
+        var sub="";
+        if(p.kg!=null){
+          var i=wList.findIndex(function(x){return x.d===p.d;}),prev=wList[i+1];
+          sub=prev?'<span class="tiny num">'+fmtSigned(p.kg-prev.kg)+' fra forrige</span>':'<span class="tiny">første måling</span>';
+        }
+        h+='<div class="hist-row'+(savedRow===p.d?' saved':'')+'" data-d="'+p.d+'" role="button" tabindex="0" aria-label="Endre '+dl+'"><div class="d">'+dl+sub+
+           (c?'<div class="tags">'+tagHTML(c)+'</div>':'')+'</div>'+
+           (p.kg!=null?'<div class="k">'+fmt(p.kg)+' kg'+(savedRow===p.d?' ✓':'')+'</div>':'<div class="k none">ingen vekt'+(savedRow===p.d?' ✓':'')+'</div>')+
+           '<span class="pen" aria-hidden="true">✎</span></div>';
       }
     });
   });
@@ -644,32 +847,44 @@ function renderHistory(arr){
 }
 function saveInline(){
   var inp=$("edKg");if(!inp||!editing)return;
-  var kg=parseKg(inp.value);
-  if(isNaN(kg)||kg<20||kg>400){inp.style.outline="2px solid var(--danger)";inp.focus();return;}
-  var d=editing;editing=null;armedDelete=null;savedRow=d;
-  setEntry(d,Math.round(kg*100)/100);
+  var on=cycleOn(),raw=inp.value.trim(),kg=raw===""?null:parseKg(raw);
+  if(raw!==""&&(isNaN(kg)||kg<20||kg>400)){inp.style.outline="2px solid var(--danger)";inp.focus();return;}
+  if(raw===""&&!on){inp.style.outline="2px solid var(--danger)";inp.focus();return;}
+  var d=editing,c=on?(edCyc||null):undefined;
+  if(kg==null&&!c&&on){ // nothing left → same as deleting the day
+    editing=null;armedDelete=null;setDay(d,null,null);return;
+  }
+  editing=null;armedDelete=null;savedRow=d;
+  setDay(d,kg==null?null:Math.round(kg*100)/100,c);
   clearTimeout(saveInline.t);saveInline.t=setTimeout(function(){savedRow=null;render();},1800);
 }
 
 /* ---------- form / today ---------- */
-var formOpen=false;
+var formOpen=false, fCyc="";
 function renderEntryCard(){
   var t=todayStr(),has=entries[t]!=null,showForm=!has||formOpen;
   $("todayDone").classList.toggle("hidden",showForm);
   $("entryForm").classList.toggle("hidden",!showForm);
   $("fCancel").classList.toggle("hidden",!(has&&formOpen));
   if(has)$("tdKg").textContent=fmt(entries[t])+" kg";
+  $("tdCycWrap").classList.toggle("hidden",!cycleOn());
+  if(cycleOn())$("tdCyc").innerHTML=cycSegHTML(cycle[t]||"");
+  $("fCyc").innerHTML=cycSegHTML(fCyc);
 }
 function updateFormNote(){
   renderEntryCard();
   var d=$("fDate").value,note=$("formNote");
   if(note.dataset.flash) return;
+  var c=cyc(d);
+  note.className="form-note";
   if(d && entries[d]!=null){
-    note.className="form-note";
-    note.textContent=(d===todayStr()?"Dagens vekt: ":"Registrert for denne datoen: ")+fmt(entries[d])+" kg – lagre for å endre.";
+    note.textContent=(d===todayStr()?"Dagens vekt: ":"Registrert for denne datoen: ")+fmt(entries[d])+" kg"+(c?" · "+CYC_NAME[c]:"")+" – lagre for å endre.";
     $("fBtn").textContent="Oppdater";
+  } else if(d && c){
+    note.textContent=CYC_NAME[c]+" er registrert "+(d===todayStr()?"i dag":"denne datoen")+". Legg til vekt når du veier deg.";
+    $("fBtn").textContent="Lagre";
   } else {
-    note.className="form-note";note.textContent="";
+    note.textContent="";
     $("fBtn").textContent="Lagre";
   }
 }
@@ -679,30 +894,45 @@ function flash(msg,cls){
   note.textContent=msg;if(!collapsed){note.className="form-note "+(cls||"");note.dataset.flash="1";}
   clearTimeout(flash.t);flash.t=setTimeout(function(){$("tdNote").textContent="";delete $("formNote").dataset.flash;updateFormNote();},2600);
 }
-function openForm(d,prefill){
-  formOpen=true;$("fDate").value=d;$("fKg").value=prefill!=null?fmt(prefill):"";
+function syncFormToDate(d){
+  fCyc=cycle[d]||"";
+  $("fKg").value=entries[d]!=null?fmt(entries[d]):"";
+}
+function openForm(d){
+  formOpen=true;$("fDate").value=d;syncFormToDate(d);
   delete $("formNote").dataset.flash;updateFormNote();
   setTimeout(function(){$("fKg").focus();},50);
 }
+function resetForm(){$("fDate").value=todayStr();$("fKg").value="";fCyc=cycle[todayStr()]||"";}
 
-$("fDate").value=todayStr();
+resetForm();
 $("fDate").max=todayStr();
-$("fDate").addEventListener("change",function(){delete $("formNote").dataset.flash;var d=$("fDate").value;if(entries[d]!=null&&!$("fKg").value)$("fKg").value=fmt(entries[d]);updateFormNote();});
-$("tdEdit").addEventListener("click",function(){openForm(todayStr(),entries[todayStr()]);});
-$("tdOther").addEventListener("click",function(){var y=fromDay(toDay(todayStr())-1);openForm(y,entries[y]);});
-$("fCancel").addEventListener("click",function(){formOpen=false;$("fKg").value="";$("fDate").value=todayStr();delete $("formNote").dataset.flash;updateFormNote();});
+$("fDate").addEventListener("change",function(){delete $("formNote").dataset.flash;syncFormToDate($("fDate").value);updateFormNote();});
+$("tdEdit").addEventListener("click",function(){openForm(todayStr());});
+$("tdOther").addEventListener("click",function(){openForm(fromDay(toDay(todayStr())-1));});
+$("fCancel").addEventListener("click",function(){formOpen=false;resetForm();delete $("formNote").dataset.flash;updateFormNote();});
+$("fCyc").addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;fCyc=b.dataset.c;$("fCyc").innerHTML=cycSegHTML(fCyc);});
+$("tdCyc").addEventListener("click",function(e){
+  var b=e.target.closest("button");if(!b)return;
+  var t=todayStr(),v=b.dataset.c||null;
+  if((cycle[t]||null)===v)return;
+  setDay(t,undefined,v);
+  flash(v?CYC_NAME[v]+" registrert i dag ✓":"Syklus fjernet for i dag","ok");
+});
 $("entryForm").addEventListener("submit",function(e){
   e.preventDefault();
-  var d=$("fDate").value,kg=parseKg($("fKg").value);
+  var on=cycleOn(),d=$("fDate").value,raw=$("fKg").value.trim(),kg=raw===""?null:parseKg(raw);
   if(!d){flash("Velg en dato.","err");return;}
-  if(isNaN(kg)||kg<20||kg>400){flash("Skriv vekten som et tall, f.eks. 82,4","err");return;}
-  var existed=entries[d]!=null;
+  if(raw!==""&&(isNaN(kg)||kg<20||kg>400)){flash("Skriv vekten som et tall, f.eks. 82,4","err");return;}
+  var c=on?(fCyc||null):undefined,cChanged=on&&(cycle[d]||null)!==c;
+  if(kg==null&&!cChanged&&!(on&&c)){flash(on?"Skriv inn vekt, eller velg PMS eller Mens.":"Skriv inn vekten, f.eks. 82,4","err");return;}
+  var existed=entries[d]!=null||!!cycle[d];
   formOpen=false;
-  setEntry(d,Math.round(kg*100)/100);
-  $("fKg").value="";$("fKg").blur();
-  $("fDate").value=todayStr();
+  setDay(d,kg==null?undefined:Math.round(kg*100)/100,c);
+  $("fKg").blur();resetForm();
   var when=d===todayStr()?"":" for "+dLabel(toDay(d),{weekday:"short",day:"numeric",month:"short"});
-  flash((existed?"Oppdatert":"Lagret")+when+": "+fmt(kg)+" kg ✓","ok");
+  var parts=[];if(kg!=null)parts.push(fmt(kg)+" kg");if(c)parts.push(CYC_NAME[c]);
+  flash((existed?"Oppdatert":"Lagret")+when+(parts.length?": "+parts.join(" · "):"")+" ✓","ok");
 });
 
 /* ---------- history actions ---------- */
@@ -715,15 +945,16 @@ $("history").addEventListener("click",function(e){
   if(row.classList.contains("editing")){
     if(!b)return;
     var act=b.dataset.act;
+    if(b.parentNode&&b.parentNode.id==="edCycSeg"){edCyc=b.dataset.c;b.parentNode.innerHTML=cycSegHTML(edCyc);return;}
     if(act==="save")saveInline();
     else if(act==="cancel"){editing=null;armedDelete=null;render();}
     else if(act==="del"){
-      if(armedDelete===d){armedDelete=null;editing=null;setEntry(d,null);}
+      if(armedDelete===d){armedDelete=null;editing=null;setDay(d,null,cycleOn()?null:undefined);}
       else{armedDelete=d;render();clearTimeout(renderHistory.t);renderHistory.t=setTimeout(function(){if(armedDelete){armedDelete=null;render();}},4000);}
     }
     return;
   }
-  editing=d;armedDelete=null;render();
+  editing=d;edCyc=cycle[d]||"";armedDelete=null;render();
   var er=document.querySelector(".hist-row.editing");
   if(er&&er.scrollIntoView)er.scrollIntoView({block:"nearest",behavior:"smooth"});
 });
@@ -738,11 +969,15 @@ $("rangeSeg").addEventListener("click",function(e){
 });
 
 /* ---------- mutations (local first, then cloud) ---------- */
-function setEntry(d,kg){
-  if(kg==null) delete entries[d]; else entries[d]=kg;
+function setDay(d,kg,c){
+  // kg / c: value to set, null to remove, undefined to leave unchanged
+  if(kg!==undefined){if(kg==null)delete entries[d];else entries[d]=kg;}
+  if(c!==undefined){if(!c)delete cycle[d];else cycle[d]=c;}
   cacheLocal();render();
-  persistEntry(d,kg);
+  if(kg!==undefined)persistEntry(d,kg);
+  if(c!==undefined)persistCycle(d,c||null);
 }
+function setEntry(d,kg){setDay(d,kg,undefined);}
 function setGoal(g){
   goal=g;cacheLocal();render();persistGoal(g);
 }
@@ -762,6 +997,14 @@ async function persistEntry(d,kg){
   }
   if(trackPending){pending.entries[d]=kg;savePending();}
 }
+async function persistCycle(d,c){
+  if(mode==="cloud"&&col){
+    var ref=col.doc("c-"+d);
+    var ok=await cloudWrite(function(){return c==null?ref.delete():ref.set({date:d,type:c});});
+    if(ok){delete pending.cycle[d];savePending();return;}
+  }
+  if(trackPending){pending.cycle[d]=c;savePending();}
+}
 async function persistGoal(g){
   if(mode==="cloud"&&col){
     var ok=await cloudWrite(function(){return col.doc("settings").set({goal:g});});
@@ -769,13 +1012,19 @@ async function persistGoal(g){
   }
   if(trackPending){pending.goal=g;savePending();}
 }
-function hasPending(){return Object.keys(pending.entries).length>0||pending.goal!==undefined;}
+function hasPending(){return Object.keys(pending.entries).length>0||Object.keys(pending.cycle).length>0||pending.goal!==undefined;}
 async function flushPending(){
   var keys=Object.keys(pending.entries);
   for(var i=0;i<keys.length;i++){
     var d=keys[i],kg=pending.entries[d],ref=col.doc("w-"+d);
     var ok=await cloudWrite(function(){return kg==null?ref.delete():ref.set({date:d,kg:kg});});
     if(ok){delete pending.entries[d];savePending();}
+  }
+  var ck=Object.keys(pending.cycle);
+  for(var j=0;j<ck.length;j++){
+    var cd=ck[j],cv=pending.cycle[cd],cref=col.doc("c-"+cd);
+    var cok=await cloudWrite(function(){return cv==null?cref.delete():cref.set({date:cd,type:cv});});
+    if(cok){delete pending.cycle[cd];savePending();}
   }
   if(pending.goal!==undefined){
     var g=pending.goal;
@@ -804,10 +1053,11 @@ async function initCloud(){
     var confirmed=false;
     var timer=setTimeout(function(){if(!confirmed)setSync("warn","Får ikke kontakt med lagringen – viser data lagret på enheten");},10000);
     col.onSnapshot(function(snap){
-      var next={},g=null;
+      var next={},nextC={},g=null;
       snap.docs.forEach(function(doc){
         var v=doc.data();if(!v)return;
         if(doc.id==="settings"){g=(typeof v.goal==="number")?v.goal:null;}
+        else if(doc.id.indexOf("c-")===0&&(v.type==="mens"||v.type==="pms")){nextC[doc.id.slice(2)]=v.type;}
         else if(doc.id.indexOf("w-")===0&&typeof v.kg==="number"&&/^\d{4}-\d\d-\d\d$/.test(v.date||doc.id.slice(2))){next[doc.id.slice(2)]=v.kg;}
       });
       if(!snap.metadata.fromCache&&!confirmed){
@@ -817,8 +1067,9 @@ async function initCloud(){
       if(!confirmed&&snap.empty) return; // don't replace local data with an empty cached view
       // overlay anything not yet written
       Object.keys(pending.entries).forEach(function(d){var kg=pending.entries[d];if(kg==null)delete next[d];else next[d]=kg;});
+      Object.keys(pending.cycle).forEach(function(d){var c=pending.cycle[d];if(c==null)delete nextC[d];else nextC[d]=c;});
       if(pending.goal!==undefined) g=pending.goal;
-      entries=next;goal=g;cacheLocal();render();
+      entries=next;cycle=nextC;goal=g;cacheLocal();render();
       if(confirmed) setSync("cloud","Synkronisert med Claude-kontoen din – samme data på alle enheter");
     },function(err){
       clearTimeout(timer);mode="local";col=null;
@@ -836,13 +1087,19 @@ $("goalSave").addEventListener("click",function(){
   $("goalInput").value="";setGoal(Math.round(g*10)/10);
 });
 $("goalClear").addEventListener("click",function(){$("goalInput").value="";setGoal(null);});
+function setCycleOn(v){prefs.cycleOn=v;savePrefs();if(v)fCyc=cycle[$("fDate").value]||"";render();}
+$("askYes").addEventListener("click",function(){setCycleOn(true);});
+$("askNo").addEventListener("click",function(){setCycleOn(false);});
+$("cycleToggle").addEventListener("change",function(){setCycleOn(this.checked);});
+$("restoreOpen").addEventListener("click",function(){var bx=$("restoreBox");bx.classList.toggle("hidden");if(!bx.classList.contains("hidden"))$("ioText").value="";});
 
-function backupJSON(){return JSON.stringify({app:"vektlogg",version:1,exported:new Date().toISOString(),goal:goal,entries:entries});}
+function backupJSON(){return JSON.stringify({app:"vektlogg",version:2,exported:new Date().toISOString(),goal:goal,entries:entries,cycle:cycle});}
 $("exportCopy").addEventListener("click",function(){
-  var txt=backupJSON();$("ioText").value=txt;
+  var txt=backupJSON();
+  function manual(){$("restoreBox").classList.remove("hidden");$("ioText").value=txt;$("ioText").select();$("ioNote").textContent="Kunne ikke kopiere automatisk – teksten er markert i feltet over, kopier den manuelt.";}
   if(navigator.clipboard&&navigator.clipboard.writeText){
-    navigator.clipboard.writeText(txt).then(function(){$("ioNote").textContent="Kopiert ✓ – lim inn i f.eks. Notater.";},function(){$("ioNote").textContent="Merk teksten over og kopier den manuelt.";});
-  } else $("ioNote").textContent="Merk teksten over og kopier den manuelt.";
+    navigator.clipboard.writeText(txt).then(function(){$("ioNote").textContent="Backup kopiert ✓ – lim den inn i f.eks. Notater.";},manual);
+  } else manual();
 });
 var inFrame=(function(){try{return window.top!==window;}catch(e){return true;}})();
 if(inFrame) $("exportFile").classList.add("hidden");
@@ -864,9 +1121,12 @@ function importText(txt){
         if(entries[d]!==kg){entries[d]=kg;persistEntry(d,kg);n++;}
       }
     });
+    if(o.cycle&&typeof o.cycle==="object"&&!Array.isArray(o.cycle)){
+      Object.keys(o.cycle).forEach(function(d){var c=o.cycle[d];if(/^\d{4}-\d\d-\d\d$/.test(d)&&(c==="mens"||c==="pms")&&cycle[d]!==c){cycle[d]=c;persistCycle(d,c);n++;}});
+    }
     if(typeof o.goal==="number"&&o.goal!==goal){goal=o.goal;persistGoal(goal);}
     cacheLocal();render();
-    $("ioNote").textContent=n?("Importerte "+n+" måling"+(n===1?"":"er")+" ✓"):"Ingen nye målinger i backupen.";
+    $("ioNote").textContent=n?("Gjenopprettet "+n+" registrering"+(n===1?"":"er")+" ✓"):"Ingen nye registreringer i backupen.";
   }catch(e){$("ioNote").textContent="Klarte ikke å lese backupen – sjekk at hele teksten er med.";}
 }
 $("importBtn").addEventListener("click",function(){var t=$("ioText").value.trim();if(t)importText(t);else $("ioNote").textContent="Lim inn backup-tekst først.";});
@@ -876,11 +1136,11 @@ $("importFile").addEventListener("change",function(){
 });
 var wipeArmed=false;
 $("wipeBtn").addEventListener("click",function(){
-  if(!wipeArmed){wipeArmed=true;this.textContent="Trykk igjen for å slette alt";$("wipeNote").textContent=" Kan ikke angres – ta backup først.";
+  if(!wipeArmed){wipeArmed=true;this.textContent="Trykk igjen for å slette alt";$("wipeNote").textContent="Kan ikke angres – ta backup først.";
     var b=this;setTimeout(function(){wipeArmed=false;b.textContent="Slett alt";$("wipeNote").textContent="";},5000);return;}
-  wipeArmed=false;this.textContent="Slett alt";$("wipeNote").textContent=" Slettet.";
-  var keys=Object.keys(entries);entries={};cacheLocal();render();
-  (async function(){for(var i=0;i<keys.length;i++)await persistEntry(keys[i],null);await persistGoal(null);})();
+  wipeArmed=false;this.textContent="Slett alt";$("wipeNote").textContent="Alt er slettet.";
+  var keys=Object.keys(entries),ckeys=Object.keys(cycle);entries={};cycle={};cacheLocal();render();
+  (async function(){for(var i=0;i<keys.length;i++)await persistEntry(keys[i],null);for(var j=0;j<ckeys.length;j++)await persistCycle(ckeys[j],null);await persistGoal(null);})();
 });
 
 /* ---------- boot ---------- */
